@@ -16,9 +16,16 @@ export class workerSalaryConfigs1710863933870 implements MigrationInterface {
               "Partner must create worker salary config for their employee, so that their salary will be calculated!",
           },
           {
-            name: "user_id",
+            name: "company_id",
             type: "int",
             isNullable: false,
+            comment: "Refer to company id on companies_info table",
+          },
+          {
+            name: "user_email",
+            type: "varchar",
+            isNullable: false,
+            comment: "Refer to email on users table",
           },
           {
             name: "standard_working_day",
