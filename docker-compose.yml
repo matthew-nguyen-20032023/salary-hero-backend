@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  # Database
+  salary_hero_postgres:
+    image: postgres
+    container_name: salary_hero_postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: $DATABASE_PASS
+      POSTGRES_DB: $DATABASE_NAME
+    ports:
+      - "${DATABASE_PORT}:5432"
+
+  # Cache
+  salary_hero_redis:
+    image: redis:7.0.8
+    container_name: salary_hero_redis
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
