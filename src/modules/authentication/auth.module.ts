@@ -6,7 +6,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserRepository } from "src/models/repositories/user.repository";
 import { AuthConsole } from "src/modules/authentication/auth.console";
 import { APP_GUARD } from "@nestjs/core";
-import { RolesGuard } from "src/modules/authentication/roles.guard";
+import { RolesGuard } from "src/guards/roles.guard";
 
 @Module({
   imports: [

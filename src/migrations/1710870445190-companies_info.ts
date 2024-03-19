@@ -16,10 +16,13 @@ export class companiesInfo1710870445190 implements MigrationInterface {
               "Partner must update their company info to register their worker!",
           },
           {
-            name: "user_id",
-            type: "int",
+            name: "user_email",
+            type: "varchar",
+            length: "255",
             isNullable: false,
-            comment: "Each company info will belong to one user",
+            isUnique: true,
+            comment:
+              "Each company info will belong to one user, so it good for searching by user email",
           },
           {
             name: "company_name",

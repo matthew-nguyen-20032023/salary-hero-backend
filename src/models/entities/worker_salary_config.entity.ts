@@ -6,7 +6,7 @@ export class WorkerSalaryConfigEntity {
   id: number;
 
   @Column()
-  user_id: number;
+  user_email: string;
 
   @Column()
   stand_working_day: number;
