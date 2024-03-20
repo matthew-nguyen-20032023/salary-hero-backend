@@ -4,3 +4,4 @@ dist
 .env
 yarn.lock
 yarn-error.log
+ormlogs.log

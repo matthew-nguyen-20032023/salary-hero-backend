@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { AuthMessageFailed } from "src/modules/authentication/auth.const";

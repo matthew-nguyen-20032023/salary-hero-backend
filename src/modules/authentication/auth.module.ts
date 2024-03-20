@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Logger, Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthController } from "src/modules/authentication/auth.controller";
 import { AuthService } from "src/modules/authentication/auth.service";
@@ -12,7 +12,6 @@ import { RolesGuard } from "src/guards/roles.guard";
   imports: [
     TypeOrmModule.forFeature([UserRepository]),
     JwtModule.register({
-      global: true,
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXP },
     }),
@@ -20,8 +19,8 @@ import { RolesGuard } from "src/guards/roles.guard";
   controllers: [AuthController],
   providers: [
     AuthService,
-    UserRepository,
     AuthConsole,
+    Logger,
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

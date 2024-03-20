@@ -1,14 +1,24 @@
-const bcrypt = require("bcrypt");
+import * as bcrypt from "bcrypt";
+import { Injectable, Logger } from "@nestjs/common";
 import { Command, Console } from "nestjs-console";
 import { UserEntity, UserRole } from "src/models/entities/user.entity";
 import { UserRepository } from "src/models/repositories/user.repository";
 
 @Console()
+@Injectable()
 export class AuthConsole {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly logger: Logger
+  ) {
+    this.logger.setContext(AuthConsole.name);
+  }
 
-  @Command({ command: "register-admin <username> <email> <password>" })
-  async autoCompleteStake(
+  @Command({
+    command: "register-admin <username> <email> <password>",
+    description: "Create admin account",
+  })
+  async registerAdminAccount(
     username: string,
     email: string,
     password: string
@@ -20,6 +30,6 @@ export class AuthConsole {
     newUser.password = await bcrypt.hash(password, salt);
     newUser.role = UserRole.Admin;
     const userCreated = await this.userRepository.save(newUser);
-    console.log("User created successfully!", userCreated);
+    this.logger.log("info", `User created successfully! ${userCreated}`);
   }
 }
