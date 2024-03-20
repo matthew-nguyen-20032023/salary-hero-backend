@@ -1,6 +1,4 @@
-import { DataSource } from "typeorm";
-
-export const AppDataSource = new DataSource({
+export const AppDataSource = {
   type: process.env.DATABASE_TYPE as "postgres",
   host: process.env.DATABASE_HOST,
   port: Number(process.env.DATABASE_PORT),
@@ -13,4 +11,4 @@ export const AppDataSource = new DataSource({
   migrationsRun: false,
   migrations: ["dist/**/migrations/*.js"],
   migrationsTableName: "migration_history",
-});
+};

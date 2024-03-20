@@ -1,13 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { EntityManager, Repository } from "typeorm";
+import { EntityRepository, Repository } from "typeorm";
 import { UserEntity } from "src/models/entities/user.entity";
 
-@Injectable()
+@EntityRepository(UserEntity)
 export class UserRepository extends Repository<UserEntity> {
-  constructor(private entityManager: EntityManager) {
-    super(UserEntity, entityManager);
-  }
-
   /**
    * @description function get user by username or email
    * @param identify

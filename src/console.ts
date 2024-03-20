@@ -7,6 +7,9 @@ import { AppModule } from "src/app.module";
 const bootstrap = new BootstrapConsole({
   module: AppModule,
   useDecorators: true,
+  contextOptions: {
+    logger: true,
+  },
 });
 
 bootstrap.init().then(async (app) => {
