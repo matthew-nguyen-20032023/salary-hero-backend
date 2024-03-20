@@ -1,3 +1,5 @@
+# This file for development only
+
 version: '3.1'
 
 services:
@@ -11,6 +13,8 @@ services:
       POSTGRES_DB: $DATABASE_NAME
     ports:
       - "${DATABASE_PORT}:5432"
+    volumes:
+      - ./docker/init-database:/docker-entrypoint-initdb.d
 
   # Cache
   salary_hero_redis:

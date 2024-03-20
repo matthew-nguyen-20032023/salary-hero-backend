@@ -4,7 +4,7 @@ import { CompanyInfoEntity } from "src/models/entities/company_info.entity";
 
 @Injectable()
 export class PartnerConfigService {
-  constructor(private readonly companyInfoRepository: CompanyInfoRepository) {}
+  constructor(public readonly companyInfoRepository: CompanyInfoRepository) {}
 
   /**
    * @description: update company info if existed, create new one if not exist
