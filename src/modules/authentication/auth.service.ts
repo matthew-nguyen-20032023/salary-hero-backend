@@ -9,7 +9,7 @@ import { UserEntity, UserRole } from "src/models/entities/user.entity";
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
-    private jwtService: JwtService
+    public jwtService: JwtService
   ) {}
 
   /**
