@@ -40,6 +40,13 @@ export class users1710859679683 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: "created_by",
+            type: "int",
+            isNullable: true,
+            comment:
+              "User created by another user id, so another user will have permission to config salary",
+          },
+          {
             name: "created_at",
             type: "timestamp",
             default: "CURRENT_TIMESTAMP",

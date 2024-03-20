@@ -6,6 +6,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { PartnerConfigController } from "src/modules/partner-config/partner-config.controller";
 import { PartnerConfigService } from "src/modules/partner-config/partner-config.service";
 import { CompanyInfoRepository } from "src/models/repositories/company_info.repository";
+import { UserRepository } from "src/models/repositories/user.repository";
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { CompanyInfoRepository } from "src/models/repositories/company_info.repo
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXP },
     }),
-    TypeOrmModule.forFeature([CompanyInfoRepository]),
+    TypeOrmModule.forFeature([CompanyInfoRepository, UserRepository]),
   ],
   controllers: [PartnerConfigController],
   providers: [

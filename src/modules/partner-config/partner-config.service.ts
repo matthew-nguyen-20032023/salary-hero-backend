@@ -1,10 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { CompanyInfoRepository } from "src/models/repositories/company_info.repository";
 import { CompanyInfoEntity } from "src/models/entities/company_info.entity";
+import { UserEntity } from "src/models/entities/user.entity";
+import { UserRepository } from "src/models/repositories/user.repository";
 
 @Injectable()
 export class PartnerConfigService {
-  constructor(public readonly companyInfoRepository: CompanyInfoRepository) {}
+  constructor(
+    public readonly companyInfoRepository: CompanyInfoRepository,
+    public readonly userRepository: UserRepository
+  ) {}
 
   /**
    * @description: update company info if existed, create new one if not exist
@@ -34,5 +39,28 @@ export class PartnerConfigService {
     if (companyName) companyInfo.company_name = companyName;
 
     return await this.companyInfoRepository.save(companyInfo);
+  }
+
+  /**
+   * @description: Get list worker belong to partner, so that partner can choose for setup salary formula
+   * @param partnerId
+   * @param page
+   * @param limit
+   */
+  public async listWorkerBeLongToPartner(
+    partnerId: number,
+    page: number,
+    limit: number
+  ): Promise<{ workers: UserEntity[]; total: number }> {
+    const workers = await this.userRepository.getListUserByCreatedUserId(
+      partnerId,
+      page,
+      limit
+    );
+    const total = await this.userRepository.countUserByCreatedUserId(partnerId);
+    return {
+      workers,
+      total,
+    };
   }
 }
