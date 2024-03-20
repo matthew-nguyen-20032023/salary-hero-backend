@@ -18,6 +18,9 @@ export class UserEntity {
   role: UserRole;
 
   @Column()
+  created_by: number;
+
+  @Column()
   created_at: number;
 
   @Column()

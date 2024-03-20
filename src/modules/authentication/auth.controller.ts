@@ -10,6 +10,7 @@ import { LoginDto } from "src/modules/authentication/dto/login.dto";
 import { RegisterDto } from "src/modules/authentication/dto/register.dto";
 import { AuthService } from "src/modules/authentication/auth.service";
 import { UserRole } from "src/models/entities/user.entity";
+import { UserId } from "src/decorators/user-id.decorator";
 
 @Controller("auth")
 @ApiTags("Authentication")
@@ -23,13 +24,15 @@ export class AuthController {
   })
   @Roles(UserRole.Admin)
   async registerForPartner(
+    @UserId() userId: number,
     @Body() registerDto: RegisterDto
   ): Promise<IResponseToClient> {
     const data = await this.authService.register(
       registerDto.userName,
       registerDto.email,
       registerDto.password,
-      UserRole.Partner
+      UserRole.Partner,
+      userId
     );
     return {
       message: AuthMessageSuccess.RegisterAccountSuccess,
@@ -45,13 +48,15 @@ export class AuthController {
   })
   @Roles(UserRole.Partner)
   async registerForWorker(
+    @UserId() userId: number,
     @Body() registerDto: RegisterDto
   ): Promise<IResponseToClient> {
     const data = await this.authService.register(
       registerDto.userName,
       registerDto.email,
       registerDto.password,
-      UserRole.Worker
+      UserRole.Worker,
+      userId
     );
     return {
       message: AuthMessageSuccess.RegisterAccountSuccess,

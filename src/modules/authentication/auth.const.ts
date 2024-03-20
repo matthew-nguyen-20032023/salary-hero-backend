@@ -3,7 +3,7 @@ import { UserRole } from "src/models/entities/user.entity";
 
 export enum AuthMessageFailed {
   UsernameOrPasswordIncorrect = "Username or password is incorrect!",
-  UserHasRegister = "Username was taken!",
+  UserHasRegister = "Username or email was taken!",
 }
 
 export enum AuthMessageSuccess {

@@ -18,16 +18,19 @@ export class AuthService {
    * @param email
    * @param password
    * @param role
+   * @param createdUserId
    */
   public async register(
     userName: string,
     email: string,
     password: string,
-    role: UserRole
+    role: UserRole,
+    createdUserId: number
   ): Promise<UserEntity> {
-    const existUser = await this.userRepository.getUserByUserNameOrEmail(
-      userName
-    );
+    const existUser = await this.userRepository.getUserByUserNameOrEmail([
+      userName,
+      email,
+    ]);
 
     if (existUser) {
       throw new HttpException(
@@ -43,6 +46,7 @@ export class AuthService {
     newUser.password = hashedPassword;
     newUser.email = email;
     newUser.role = role;
+    newUser.created_by = createdUserId;
     // todo: Can add more logic such as add column code and status so that user have to verify their email to active account
     return await this.userRepository.save(newUser);
   }
@@ -56,7 +60,7 @@ export class AuthService {
     identify: string,
     password: string
   ): Promise<{ access_token: string }> {
-    const user = await this.userRepository.getUserByUserNameOrEmail(identify);
+    const user = await this.userRepository.getUserByUserNameOrEmail([identify]);
 
     if (!user) {
       throw new HttpException(
