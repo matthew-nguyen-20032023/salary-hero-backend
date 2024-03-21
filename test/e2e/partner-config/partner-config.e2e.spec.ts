@@ -48,14 +48,14 @@ describe("Partner Config Service", () => {
 
     it("Should be forbidden because not login", async () => {
       const response = await request(app.getHttpServer())
-        .post("/partner-config/update-info")
+        .put("/partner-config/update-info")
         .send(mockPartnerUpdateInfoDto);
       expect(response.status).toBe(HttpStatus.FORBIDDEN);
     });
 
     it("Should be forbidden because worker has no permission to access this api", async () => {
       const response = await request(app.getHttpServer())
-        .post("/partner-config/update-info")
+        .put("/partner-config/update-info")
         .set("Authorization", `Bearer ${workerAccessToken}`)
         .send(mockPartnerUpdateInfoDto);
       expect(response.status).toBe(HttpStatus.FORBIDDEN);
@@ -63,7 +63,7 @@ describe("Partner Config Service", () => {
 
     it("Should be forbidden because admin has no permission to access this api", async () => {
       const response = await request(app.getHttpServer())
-        .post("/partner-config/update-info")
+        .put("/partner-config/update-info")
         .set("Authorization", `Bearer ${adminAccessToken}`)
         .send(mockPartnerUpdateInfoDto);
       expect(response.status).toBe(HttpStatus.FORBIDDEN);
@@ -71,10 +71,10 @@ describe("Partner Config Service", () => {
 
     it("Should be created because partner has permission to access this api", async () => {
       const response = await request(app.getHttpServer())
-        .post("/partner-config/update-info")
+        .put("/partner-config/update-info")
         .set("Authorization", `Bearer ${partnerAccessToken}`)
         .send(mockPartnerUpdateInfoDto);
-      expect(response.status).toBe(HttpStatus.CREATED);
+      expect(response.status).toBe(HttpStatus.OK);
     });
   });
 

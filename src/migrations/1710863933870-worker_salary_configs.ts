@@ -48,6 +48,12 @@ export class workerSalaryConfigs1710863933870 implements MigrationInterface {
             comment: "Only active config will be used to calculate salary",
           },
           {
+            name: "created_by",
+            type: "int",
+            isNullable: false,
+            comment: "Identify who is manager of this config or this worker",
+          },
+          {
             name: "created_at",
             type: "timestamp",
             default: "CURRENT_TIMESTAMP",

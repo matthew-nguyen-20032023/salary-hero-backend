@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpStatus, Post, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Put,
+  Query,
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { PartnerConfigService } from "src/modules/partner-config/partner-config.service";
 import { Roles } from "src/modules/authentication/auth.const";
@@ -9,20 +17,21 @@ import { PartnerMessageSuccess } from "src/modules/partner-config/partner-config
 import { UserEmail } from "src/decorators/user-email.decorator";
 import { ListWorkerDto } from "src/modules/partner-config/dto/list-worker.dto";
 import { UserId } from "src/decorators/user-id.decorator";
+import { ConfigWorkerSalaryDto } from "src/modules/partner-config/dto/config-worker-salary.dto";
 
 @Controller("partner-config")
 @ApiTags("Partner")
 @ApiBearerAuth()
+@Roles(UserRole.Partner)
 export class PartnerConfigController {
   constructor(private readonly partnerService: PartnerConfigService) {}
 
-  @Post("update-info")
+  @Put("update-info")
   @ApiOperation({
     summary:
       "[Partner] Api to partner for update their information. Noted that partner must update their information to register their worker.",
   })
-  @Roles(UserRole.Partner)
-  async registerForPartner(
+  async updateCompanyInfo(
     @Body() partnerUpdateInfoDto: PartnerUpdateInfoDto,
     @UserEmail() userEmail: string
   ): Promise<IResponseToClient> {
@@ -34,7 +43,7 @@ export class PartnerConfigController {
     return {
       message: PartnerMessageSuccess.UpdateCompanyInfoSuccess,
       data,
-      statusCode: HttpStatus.CREATED,
+      statusCode: HttpStatus.OK,
     };
   }
 
@@ -42,7 +51,6 @@ export class PartnerConfigController {
   @ApiOperation({
     summary: "[Partner] Api to partner for listing their worker.",
   })
-  @Roles(UserRole.Partner)
   async listWorker(
     @UserId() userId: number,
     @Query() listWorkerDto: ListWorkerDto
@@ -54,6 +62,30 @@ export class PartnerConfigController {
     );
     return {
       message: PartnerMessageSuccess.ListWorkerSuccess,
+      data,
+      statusCode: HttpStatus.CREATED,
+    };
+  }
+
+  @Post("worker-salary")
+  @ApiOperation({
+    summary:
+      "[Partner] Api to partner for config their worker salary. (will de-active the old config if exist)",
+  })
+  async workerSalary(
+    @UserId() partnerId: number,
+    @UserEmail() partnerEmail: string,
+    @Body() configWorkerSalaryDto: ConfigWorkerSalaryDto
+  ): Promise<IResponseToClient> {
+    const data = await this.partnerService.configWorkerSalary(
+      partnerId,
+      partnerEmail,
+      configWorkerSalaryDto.workerEmail,
+      configWorkerSalaryDto.standardWorkingDay,
+      configWorkerSalaryDto.baseSalary
+    );
+    return {
+      message: PartnerMessageSuccess.ConfigWorkerSalarySuccess,
       data,
       statusCode: HttpStatus.CREATED,
     };

@@ -6,16 +6,22 @@ export class WorkerSalaryConfigEntity {
   id: number;
 
   @Column()
+  company_id: number;
+
+  @Column()
   user_email: string;
 
   @Column()
-  stand_working_day: number;
+  standard_working_day: number;
 
   @Column()
   base_salary: number;
 
   @Column()
   is_active: boolean;
+
+  @Column()
+  created_by: number;
 
   @Column()
   created_at: number;
