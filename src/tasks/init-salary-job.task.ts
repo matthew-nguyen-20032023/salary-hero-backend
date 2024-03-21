@@ -9,7 +9,6 @@ import {
   JobType,
 } from "src/models/entities/job.entity";
 import { CompanyInfoRepository } from "src/models/repositories/company_info.repository";
-import { getConnection } from "typeorm";
 
 /**
  * @description For determine new day and need to init job calculate salary for worker
@@ -24,51 +23,58 @@ export class InitSalaryJobTask {
 
   @Cron(CronExpression.EVERY_30_SECONDS)
   public async handleCron() {
-    // Get current date in UTC +0 and round hour, minute, second to 0
-    const dateTimeUTC0 = moment()
-      .utc()
-      .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-      .subtract(Number(process.env.CALCULATE_SALARY_AFTER_DAY), "days")
-      .format("YYYY-MM-DD");
-    const timezoneUTC0 = new Date(dateTimeUTC0).getTime();
+    const listCompany = await this.companyInfoRepository.getAllCompany();
 
-    // Job key to determine single date
-    const keyJob = `${JobKey.InitSalaryJobByDate}${timezoneUTC0}`;
-
-    const existJob = await this.jobRepository.getCompletedJobByKey(
-      timezoneUTC0,
-      keyJob
-    );
-
-    if (existJob) {
+    if (listCompany.length === 0) {
       this.logger.log(
-        `Salary job for date: ${dateTimeUTC0} was created. Waiting for next day...`
+        "There is no company found. Waiting for new one created!"
       );
       return;
     }
 
-    const listCompany = await this.companyInfoRepository.getAllCompany();
-    const newInitJobSalary = new JobEntity();
-    newInitJobSalary.job_type = JobType.Init;
-    newInitJobSalary.key = keyJob;
-    newInitJobSalary.date = timezoneUTC0;
-    newInitJobSalary.status = JobStatus.Completed;
-    const salaryJobs = listCompany.map((company) => {
+    const jobs: JobEntity[] = [];
+    for (const companyInfo of listCompany) {
+      const currentCompanyDateTime = moment()
+        .utc() // Get current time at UTC +0
+        .add(companyInfo.timezone, "hours") // Add company timezone to get current company time
+        .set({ hour: 0, minute: 0, second: 0, millisecond: 0 }) // Round hour, minute and second to 0
+        .subtract(Number(process.env.CALCULATE_SALARY_AFTER_DAY), "days") // Calculate salary after day
+        .format("YYYY-MM-DD");
+      const companyTimeZoneCalculateSalary = new Date(
+        currentCompanyDateTime
+      ).getTime();
+
+      // Job key to determine company was job salary was added today
+      const jobKey = `${JobKey.CompanyWorkerSalaryJob}${companyInfo.id}_${companyTimeZoneCalculateSalary}`;
+      const existJob = await this.jobRepository.getJobByKeyAndStatus(
+        companyTimeZoneCalculateSalary,
+        jobKey,
+        [JobStatus.Pending, JobStatus.Completed]
+      );
+
+      if (existJob) {
+        this.logger.log(
+          `Exist job calculate salary for date ${currentCompanyDateTime} of ${companyInfo.user_email}`
+        );
+        continue;
+      }
+
       const newJob = new JobEntity();
-      newJob.key = `${JobKey.CompanyWorkerSalaryJob}${company.id}_${timezoneUTC0}`;
+      newJob.key = jobKey;
       newJob.status = JobStatus.Pending;
-      newJob.date = timezoneUTC0;
+      newJob.date = companyTimeZoneCalculateSalary;
       newJob.job_type = JobType.WorkerSalaryCalculate;
-      return newJob;
-    });
+      jobs.push(newJob);
+    }
 
-    await getConnection().transaction(async (transaction) => {
-      await transaction.save<JobEntity>(newInitJobSalary);
-      await transaction.save<JobEntity>(salaryJobs);
-    });
+    if (jobs.length === 0) {
+      this.logger.log(`Dont need to create salary job! ${new Date()}`);
+      return;
+    }
 
+    await this.jobRepository.save(jobs);
     this.logger.log(
-      `Salary job for date: ${dateTimeUTC0} was created successfully.`
+      `Salary job for date ${new Date()} was created successfully.`
     );
   }
 }

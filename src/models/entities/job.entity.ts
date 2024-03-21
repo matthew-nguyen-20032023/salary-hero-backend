@@ -36,15 +36,11 @@ export enum JobStatus {
 
 // Any new job need to define key here for another developer know
 export enum JobKey {
-  // Need to add date in timestamp, ex: init_salary_job_1710979200000
-  // represent for date: 2024-03-20
-  InitSalaryJobByDate = "init_salary_job_",
   // Need to add company info id and date in timestamp, ex: company_worker_salary_calculate_1_1710979200000
   // represent for company 1 at date: 2024-03-20
   CompanyWorkerSalaryJob = "company_worker_salary_calculate_",
 }
 
 export enum JobType {
-  Init = "init",
   WorkerSalaryCalculate = "worker_salary_calculate",
 }
