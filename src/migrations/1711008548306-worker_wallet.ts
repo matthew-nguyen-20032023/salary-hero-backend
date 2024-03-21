@@ -21,13 +21,13 @@ export class workerWallet1711008548306 implements MigrationInterface {
           },
           {
             name: "available_balance",
-            type: "int",
+            type: "float",
             default: 0,
             comment: "available balance so that worker can withdraw",
           },
           {
             name: "pending_balance",
-            type: "int",
+            type: "float",
             default: 0,
             comment:
               "Pending balance so that worker need to wait until next day to available. This is used when company want to update again yesterday worker salary",

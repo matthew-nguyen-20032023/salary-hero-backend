@@ -17,4 +17,19 @@ export class WorkerSalaryConfigRepository extends Repository<WorkerSalaryConfigE
       },
     });
   }
+
+  /**
+   * @description Get list active worker config salary for specific company
+   * @param companyId
+   */
+  public async getListActiveByCompanyId(
+    companyId: number
+  ): Promise<WorkerSalaryConfigEntity[]> {
+    return await this.find({
+      where: {
+        company_id: companyId,
+        is_active: true,
+      },
+    });
+  }
 }

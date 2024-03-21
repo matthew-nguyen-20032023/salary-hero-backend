@@ -11,7 +11,7 @@ import {
 import { CompanyInfoRepository } from "src/models/repositories/company_info.repository";
 
 /**
- * @description For determine new day and need to init job calculate salary for worker
+ * @description Determine new day for specific company timezone, then decide to create salary job for specific company
  */
 @Injectable()
 export class InitSalaryJobTask {

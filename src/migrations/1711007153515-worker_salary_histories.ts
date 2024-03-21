@@ -29,14 +29,14 @@ export class workerSalaryHistories1711007153515 implements MigrationInterface {
           },
           {
             name: "daily_income",
-            type: "int",
+            type: "float",
             isNullable: false,
             comment:
               "Represent for how much income worker earn in specific day",
           },
           {
             name: "total_income",
-            type: "int",
+            type: "float",
             isNullable: false,
             comment:
               "Represent total income of workers from oldest til this current. Formula is today total income = yesterday total income + today daily income",
