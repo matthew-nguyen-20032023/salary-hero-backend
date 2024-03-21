@@ -15,7 +15,7 @@ export class workerWalletHistories1711009720195 implements MigrationInterface {
           },
           {
             name: "date",
-            type: "timestamp",
+            type: "bigint",
             isNullable: false,
             comment:
               "Date of action but in timestamp for multiple region support",
@@ -43,6 +43,7 @@ export class workerWalletHistories1711009720195 implements MigrationInterface {
             name: "note",
             type: "varchar",
             length: "255",
+            isNullable: true,
             comment: "Some note if worker want to",
           },
           {
