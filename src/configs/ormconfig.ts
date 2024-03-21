@@ -13,6 +13,7 @@ const config: ConnectionOptions = {
       ? "test_salary_hero"
       : AppDataSource.database,
   logger: "file",
+  logging: true,
   migrationsTableName: "migrate_tables",
   synchronize: false,
   // Allow both start:prod and start:dev to use migrations

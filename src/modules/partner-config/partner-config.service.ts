@@ -21,11 +21,13 @@ export class PartnerConfigService {
    * @param userEmail
    * @param companyName
    * @param companyDescription
+   * @param timezone
    */
   public async updateCompanyInfo(
     userEmail: string,
     companyName: string,
-    companyDescription: string
+    companyDescription: string,
+    timezone: number
   ): Promise<CompanyInfoEntity> {
     let companyInfo: CompanyInfoEntity;
 
@@ -36,12 +38,14 @@ export class PartnerConfigService {
     if (!companyInfo) {
       companyInfo = new CompanyInfoEntity();
       companyInfo.user_email = userEmail;
+      companyInfo.timezone = timezone;
     }
 
     // Only update on field that user want to change
     if (companyDescription)
       companyInfo.company_description = companyDescription;
     if (companyName) companyInfo.company_name = companyName;
+    if (timezone) companyInfo.timezone = timezone;
 
     return await this.companyInfoRepository.save(companyInfo);
   }

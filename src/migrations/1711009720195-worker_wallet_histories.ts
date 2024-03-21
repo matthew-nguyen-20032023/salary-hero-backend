@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
-export class companiesInfo1710870445190 implements MigrationInterface {
+export class workerWalletHistories1711009720195 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: "companies_info",
+        name: "worker_wallet_histories",
         columns: [
           {
             name: "id",
@@ -12,37 +12,38 @@ export class companiesInfo1710870445190 implements MigrationInterface {
             isPrimary: true,
             isGenerated: true,
             generationStrategy: "increment",
-            comment:
-              "Partner must update their company info to register their worker!",
           },
           {
-            name: "user_email",
-            type: "varchar",
-            length: "255",
+            name: "date",
+            type: "timestamp",
             isNullable: false,
-            isUnique: true,
             comment:
-              "Each company info will belong to one user, so it good for searching by user email",
+              "Date of action but in timestamp for multiple region support",
           },
           {
-            name: "company_name",
+            name: "worker_email",
             type: "varchar",
             length: "255",
             isNullable: false,
           },
           {
-            name: "company_description",
+            name: "action_type",
             type: "varchar",
-            length: "500",
-            isNullable: true,
+            length: "10",
+            isNullable: false,
+            comment: "Can be withdraw, transfer, receive,...",
           },
           {
-            name: "timezone",
+            name: "amount",
             type: "int",
             default: 0,
-            isNullable: false,
-            comment:
-              "Job calculate worker salary start from new day at 00:00:00 - 00:00:30 (server_timestamp + company timezone setup)",
+            comment: "amount of money",
+          },
+          {
+            name: "note",
+            type: "varchar",
+            length: "255",
+            comment: "Some note if worker want to",
           },
           {
             name: "created_at",

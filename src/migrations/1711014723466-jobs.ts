@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
-export class companiesInfo1710870445190 implements MigrationInterface {
+export class jobs1711014723466 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: "companies_info",
+        name: "jobs",
         columns: [
           {
             name: "id",
@@ -12,37 +12,41 @@ export class companiesInfo1710870445190 implements MigrationInterface {
             isPrimary: true,
             isGenerated: true,
             generationStrategy: "increment",
-            comment:
-              "Partner must update their company info to register their worker!",
           },
           {
-            name: "user_email",
+            name: "date",
+            type: "bigint",
+            isNullable: false,
+            comment:
+              "Date in timestamp UTC +0, hours, minute and second will be set to 0",
+          },
+          {
+            name: "key",
             type: "varchar",
             length: "255",
             isNullable: false,
-            isUnique: true,
-            comment:
-              "Each company info will belong to one user, so it good for searching by user email",
+            comment: "Job key, can be any value as we want",
           },
           {
-            name: "company_name",
+            name: "job_type",
             type: "varchar",
             length: "255",
             isNullable: false,
+            comment:
+              "Job type, can be calculate_worker_salary, init_job_calculate_worker_salary",
           },
           {
-            name: "company_description",
+            name: "status",
             type: "varchar",
-            length: "500",
+            length: "10",
+            isNullable: false,
+          },
+          {
+            name: "note",
+            type: "varchar",
+            length: "255",
             isNullable: true,
-          },
-          {
-            name: "timezone",
-            type: "int",
-            default: 0,
-            isNullable: false,
-            comment:
-              "Job calculate worker salary start from new day at 00:00:00 - 00:00:30 (server_timestamp + company timezone setup)",
+            comment: "Some note if worker want to",
           },
           {
             name: "created_at",
