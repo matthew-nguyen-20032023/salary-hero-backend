@@ -1,5 +1,5 @@
 import { EntityRepository, In, Repository } from "typeorm";
-import { JobEntity, JobStatus } from "src/models/entities/job.entity";
+import { JobEntity, JobStatus, JobType } from "src/models/entities/job.entity";
 
 @EntityRepository(JobEntity)
 export class JobRepository extends Repository<JobEntity> {
@@ -19,6 +19,19 @@ export class JobRepository extends Repository<JobEntity> {
         date: date,
         key: key,
         status: In(status),
+      },
+    });
+  }
+
+  /**
+   * @description Get pending jobs by date and type
+   * @param type
+   */
+  public async getOnePendingJobByType(type: JobType): Promise<JobEntity> {
+    return await this.findOne({
+      where: {
+        job_type: type,
+        status: JobStatus.Pending,
       },
     });
   }

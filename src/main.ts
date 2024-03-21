@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { NestFactory } from "@nestjs/core";
@@ -51,6 +52,16 @@ async function bootstrap() {
   }
 
   await app.listen(process.env.NODE_PORT);
+
+  if (process.env.DISABLE_SCHEDULE_JOB) {
+    // disable when DISABLE_SCHEDULE_JOB
+    const schedulerRegistry = app.get(SchedulerRegistry);
+    const jobs = schedulerRegistry.getCronJobs();
+    jobs.forEach((_, jobId) => {
+      schedulerRegistry.deleteCronJob(jobId);
+    });
+  }
+
   console.log(
     `[${process.env.APP_NAME}]: `,
     `SERVICE BACKEND RUNNING ON PORT ${process.env.NODE_PORT}`
