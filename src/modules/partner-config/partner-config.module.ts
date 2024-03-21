@@ -7,6 +7,7 @@ import { PartnerConfigController } from "src/modules/partner-config/partner-conf
 import { PartnerConfigService } from "src/modules/partner-config/partner-config.service";
 import { CompanyInfoRepository } from "src/models/repositories/company_info.repository";
 import { UserRepository } from "src/models/repositories/user.repository";
+import { WorkerSalaryConfigRepository } from "src/models/repositories/worker_salary_config.repository";
 
 @Module({
   imports: [
@@ -14,7 +15,11 @@ import { UserRepository } from "src/models/repositories/user.repository";
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXP },
     }),
-    TypeOrmModule.forFeature([CompanyInfoRepository, UserRepository]),
+    TypeOrmModule.forFeature([
+      CompanyInfoRepository,
+      UserRepository,
+      WorkerSalaryConfigRepository,
+    ]),
   ],
   controllers: [PartnerConfigController],
   providers: [
