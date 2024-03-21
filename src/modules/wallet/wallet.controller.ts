@@ -4,9 +4,9 @@ import { Roles } from "src/modules/authentication/auth.const";
 import { UserRole } from "src/models/entities/user.entity";
 import { IResponseToClient } from "src/configs/response-to-client.config";
 import { UserEmail } from "src/decorators/user-email.decorator";
-import { WalletService } from "./wallet.service";
-import { WalletMessageSuccess } from "./wallet.const";
-import { TransferMoneyDto } from "./dto/transfer-money.dto";
+import { WalletService } from "src/modules/wallet/wallet.service";
+import { WalletMessageSuccess } from "src/modules/wallet/wallet.const";
+import { TransferMoneyDto } from "src/modules/wallet/dto/transfer-money.dto";
 
 @Controller("wallet")
 @ApiTags("Wallet")

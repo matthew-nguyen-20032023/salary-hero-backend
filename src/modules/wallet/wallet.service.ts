@@ -5,7 +5,7 @@ import {
   WorkerWalletActionType,
   WorkerWalletHistoryEntity,
 } from "src/models/entities/worker_wallet_history.entity";
-import { WalletMessageFailed } from "./wallet.const";
+import { WalletMessageFailed } from "src/modules/wallet/wallet.const";
 import { getConnection } from "typeorm";
 import { WorkerWalletHistoryEntityRepository } from "src/models/repositories/worker_wallet_history.repository";
 
