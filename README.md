@@ -5,7 +5,7 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-# Complete Base Nestjs Project
+# Salary Hero Backend
 
 ## Description
 
@@ -26,23 +26,36 @@ docker-compose version 1.29.2, build unknown
 ```
 
 ## Setup
+### Setup components
 ```bash
 # Preparing
-$ yarn #install lib dependencies
-$ cp .env.example .env #init .env file (change information if you want to) 
-$ docker-compose up -d #init services component (depend on .env file, noted new docker version run docker compose up -d)
-$ npm run typeorm:run #migrate database schema
-
+$ yarn                          # install lib dependencies
+$ cp .env.example .env          # init .env file (change information if you want to) 
+$ docker-compose up -d          # init services component (depend on .env file, noted new docker version run docker compose up -d)
+$ npm run typeorm:run           # migrate database schema
+$ npm run typeorm:test          # migrate testing database schema
+$ yarn console:dev seeding-data # seeding data for develop
+```
+### Run Backend
+```bash
 # For development run
 $ yarn start:dev 
+#-----------------------------#
 # Or for production run
 $ yarn build
 $ yarn start:prod
-
-# For testing after preparing successfully
-$ npm run typeorm:test #migrate testing database schema
-# Noted that you have to take a look at .env.test for correct setup test variable environment
-$ yarn test # Test all e2e and unit test
+```
+### Background Job Handle worker salary calculation 
+```bash
+# For development run
+$ yarn console:dev calculate-worker-salary
+#-----------------------------#
+# For production run
+$ node dist/src/console.js calculate-worker-salary
+```
+### Testing
+```bash
+$ yarn test
 ```
 
 ## Some Feature Can Implement In The Future
