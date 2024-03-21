@@ -45,6 +45,9 @@ $ npm run typeorm:test #migrate testing database schema
 $ yarn test # Test all e2e and unit test
 ```
 
+## Some Feature Can Implement In The Future
+- OTP to withdraw or transfer money for worker
+
 ## Repository Activity
 ![Alt](https://repobeats.axiom.co/api/embed/1929095ae8b4fb2d5d5dbc561ad4e906db6dd2b7.svg "Repobeats analytics image")
 ## License

@@ -38,7 +38,8 @@ export class PartnerConfigController {
     const data = await this.partnerService.updateCompanyInfo(
       userEmail,
       partnerUpdateInfoDto.companyName,
-      partnerUpdateInfoDto.companyDescription
+      partnerUpdateInfoDto.companyDescription,
+      partnerUpdateInfoDto.timezone
     );
     return {
       message: PartnerMessageSuccess.UpdateCompanyInfoSuccess,

@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
-export class companiesInfo1710870445190 implements MigrationInterface {
+export class workerWallet1711008548306 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: "companies_info",
+        name: "worker_wallet",
         columns: [
           {
             name: "id",
@@ -12,37 +12,31 @@ export class companiesInfo1710870445190 implements MigrationInterface {
             isPrimary: true,
             isGenerated: true,
             generationStrategy: "increment",
-            comment:
-              "Partner must update their company info to register their worker!",
           },
           {
-            name: "user_email",
+            name: "worker_email",
             type: "varchar",
             length: "255",
-            isNullable: false,
             isUnique: true,
-            comment:
-              "Each company info will belong to one user, so it good for searching by user email",
           },
           {
-            name: "company_name",
-            type: "varchar",
-            length: "255",
-            isNullable: false,
-          },
-          {
-            name: "company_description",
-            type: "varchar",
-            length: "500",
-            isNullable: true,
-          },
-          {
-            name: "timezone",
+            name: "available_balance",
             type: "int",
             default: 0,
-            isNullable: false,
+            comment: "available balance so that worker can withdraw",
+          },
+          {
+            name: "pending_balance",
+            type: "int",
+            default: 0,
             comment:
-              "Job calculate worker salary start from new day at 00:00:00 - 00:00:30 (server_timestamp + company timezone setup)",
+              "Pending balance so that worker need to wait until next day to available. This is used when company want to update again yesterday worker salary",
+          },
+          {
+            name: "is_active",
+            type: "boolean",
+            default: true,
+            comment: "Used when want to block worker wallet",
           },
           {
             name: "created_at",

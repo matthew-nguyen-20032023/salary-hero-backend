@@ -31,6 +31,7 @@ describe("Partner Config Service", () => {
   });
 
   describe("Test Update Company Info", () => {
+    const mockTimezone = 7;
     it("Create new company info because company info not existed", async () => {
       const mockCompanyName = "testCompanyName";
       const mockCompanyDescription = "testDescription";
@@ -39,9 +40,11 @@ describe("Partner Config Service", () => {
         await partnerConfigService.updateCompanyInfo(
           mockEmail,
           mockCompanyName,
-          mockCompanyDescription
+          mockCompanyDescription,
+          mockTimezone
         );
       expect(newCompanyInfoCreated.user_email).toBe(mockEmail);
+      expect(newCompanyInfoCreated.timezone).toBe(mockTimezone);
       expect(newCompanyInfoCreated.company_name).toBe(mockCompanyName);
       expect(newCompanyInfoCreated.company_description).toBe(
         mockCompanyDescription
@@ -55,15 +58,18 @@ describe("Partner Config Service", () => {
       await partnerConfigService.updateCompanyInfo(
         mockEmail,
         mockCompanyName,
-        mockCompanyDescription
+        mockCompanyDescription,
+        mockTimezone
       );
       const mockUpdateCompanyName = "Company Changed";
       const updatedCompanyInfo = await partnerConfigService.updateCompanyInfo(
         mockEmail,
         mockUpdateCompanyName,
+        undefined,
         undefined
       );
       expect(updatedCompanyInfo.user_email).toBe(mockEmail);
+      expect(updatedCompanyInfo.timezone).toBe(mockTimezone);
       expect(updatedCompanyInfo.company_name).toBe(mockUpdateCompanyName);
       expect(updatedCompanyInfo.company_description).toBe(
         mockCompanyDescription

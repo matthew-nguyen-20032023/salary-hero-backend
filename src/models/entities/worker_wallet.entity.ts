@@ -1,21 +1,21 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({ name: "companies_info" })
-export class CompanyInfoEntity {
+@Entity({ name: "worker_wallet" })
+export class WorkerWalletEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  user_email: string;
+  worker_email: string;
 
   @Column()
-  company_name: string;
+  available_balance: number;
 
   @Column()
-  company_description: string;
+  pending_balance: number;
 
   @Column()
-  timezone: number;
+  is_active: boolean;
 
   @Column()
   created_at: number;
