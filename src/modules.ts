@@ -8,6 +8,7 @@ import { PartnerConfigModule } from "src/modules/partner-config/partner-config.m
 import { SalaryCalculationModule } from "src/modules/salary-calculation/salary-calculation.module";
 import { TaskModule } from "src/tasks/task.module";
 import { SeedingModule } from "src/seeding/seeding.module";
+import { WalletModule } from "src/modules/wallet/wallet.module";
 
 const Modules = [
   Logger,
@@ -17,6 +18,7 @@ const Modules = [
   ConsoleModule,
   TaskModule,
   SeedingModule,
+  WalletModule,
   TypeOrmModule.forRoot(AppDataSource),
   ScheduleModule.forRoot(),
 ];
