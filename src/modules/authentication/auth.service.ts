@@ -47,7 +47,7 @@ export class AuthService {
     newUser.email = email;
     newUser.role = role;
     newUser.created_by = createdUserId;
-    // todo: Can add more logic such as add column code and status so that user have to verify their email to active account
+    // TODO: Can add more logic such as add column code and status so that user have to verify their email to active account
     return await this.userRepository.save(newUser);
   }
 

@@ -17,7 +17,7 @@ export class CompanyInfoRepository extends Repository<CompanyInfoEntity> {
     });
   }
 
-  // Todo: Need to refactor if there more than 100k of companies => set job and checkpoint
+  // TODO: Need to refactor if there more than 100k of companies => set job and checkpoint
   public async getAllCompany(): Promise<CompanyInfoEntity[]> {
     return await this.find();
   }
