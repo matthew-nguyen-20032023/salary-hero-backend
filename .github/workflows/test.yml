@@ -46,7 +46,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - name: Install yarn && Install dependencies
-        run: npm install yarn -g && yarn list && yarn
+        run: npm install yarn -g && yarn && yarn list
       - name: Test
         env:
           NODE_ENV: testing
