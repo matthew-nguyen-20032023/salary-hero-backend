@@ -23,3 +23,8 @@ export class WorkerWalletEntity {
   @Column()
   updated_at: number;
 }
+
+export enum LockUnLockAction {
+  Lock = "lock",
+  Unlock = "unlock",
+}
