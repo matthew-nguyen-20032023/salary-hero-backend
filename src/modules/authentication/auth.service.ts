@@ -149,7 +149,6 @@ export class AuthService {
         }),
       };
     } catch (error) {
-      console.log(error);
       throw new HttpException(
         { message: AuthMessageFailed.InvalidRefreshToken },
         HttpStatus.BAD_REQUEST
