@@ -10,10 +10,9 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13-alpine
+        image: postgres
         env:
           POSTGRES_PASSWORD: admin@123
-          POSTGRES_USER: postgres
           POSTGRES_DB: test_salary_hero
         options: >-
           --health-cmd pg_isready
@@ -45,20 +44,13 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-      - name: Install yarn
-        run: npm install yarn -g
-      - name: Install dependencies
-          run: yarn
+      - name: Install yarn && Install dependencies
+        run: npm install yarn -g && yarn && yarn list
+      - name: Setup env
+        run: cp .env.test .env
       - name: Test
-        env:
-          NODE_ENV: testing
-          POSTGRES_PASSWORD: admin@123
-          POSTGRES_USER: postgres
-          POSTGRES_DB_TEST: test_salary_hero
         run: |
+          cat .env
+          cat .env.test
           npm run typeorm:test
           yarn test
