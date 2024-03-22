@@ -45,7 +45,6 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
       - name: Install yarn && Install dependencies
         run: npm install yarn -g && yarn list && yarn
       - name: Test
