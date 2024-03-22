@@ -47,9 +47,11 @@ jobs:
             ${{ runner.os }}-
       - name: Install yarn && Install dependencies
         run: npm install yarn -g && yarn && yarn list
+      - name: Setup env
+        run: cp .env.test .env
       - name: Test
         env:
-          NODE_ENV: testing
+          NODE_ENV: development
           POSTGRES_PASSWORD: admin@123
           POSTGRES_USER: postgres
           POSTGRES_DB_TEST: test_salary_hero
