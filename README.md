@@ -21,14 +21,17 @@ their money.
 ![alt text](https://github.com/matthew-nguyen-20032023/salary-hero-backend/blob/dev/docs/images/overview-system/low-level-design-with-aws-cloud.png?raw=true)
 
 ## Required
-Node version v18.13.0 <br />
+Node version v16.20.1 <br />
 Yarn version 1.22.19 <br />
 Docker version 20.10.21, build 20.10.21-0ubuntu1~22.04.3 <br/>
 docker-compose version 1.29.2, build unknown
-
+PM2 version 5.3.0 => Only for Quick Start
 ## Quick Start
 ```bash
-# Coming soon
+# Make sure you have full required above
+# Important: You must install pm2 for quick start
+$ sudo chmod -R 777 ./quick_start.sh 
+$ ./quick_start.sh 
 ```
 
 ## Setup
