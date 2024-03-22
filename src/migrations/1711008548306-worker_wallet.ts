@@ -30,7 +30,7 @@ export class workerWallet1711008548306 implements MigrationInterface {
             type: "float",
             default: 0,
             comment:
-              "Pending balance so that worker need to wait until next day to available. This is used when company want to update again yesterday worker salary",
+              "Pending balance so that worker need to wait until next calculation to available. This is used when company want to update again yesterday worker salary",
           },
           {
             name: "is_active",
