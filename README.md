@@ -24,17 +24,19 @@ their money.
 Node version v16.20.1 <br />
 Yarn version 1.22.19 <br />
 Docker version 20.10.21, build 20.10.21-0ubuntu1~22.04.3 <br/>
-docker-compose version 1.29.2, build unknown
+docker-compose version 1.29.2, build unknown <br/>
 PM2 version 5.3.0 => Only for Quick Start
-## Quick Start
+## Quick Start Or Manual Setup Guide Below
 ```bash
 # Make sure you have full required above
-# Important: You must install pm2 for quick start
+# Important: make sure that list port here available on your machine
+# List port: 9092, 6379, 5432, 2181, 3000, 3001
+# Or you can change value from .env.example for another port
 $ sudo chmod -R 777 ./quick_start.sh 
 $ ./quick_start.sh 
 ```
 
-## Setup
+## Manual Setup
 ### Setup components
 ```bash
 # Preparing
