@@ -1,0 +1,55 @@
+name: Test
+
+on:
+  pull_request:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: [ubuntu-latest]
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: admin@123
+          POSTGRES_DB: test_salary_hero
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:6-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.20.1'
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install yarn && Install dependencies
+        run: npm install yarn -g && yarn && yarn list
+      - name: Build APP
+        run: yarn build
+      - name: Setup env
+        run: cp .env.test .env
+      - name: Migration
+        run: npm run typeorm:test
+      - name: Echo env test
+        run: cat .env.test
+      - name: Echo env
+        run: cat .env
+      - name: Test
+        run: yarn test
