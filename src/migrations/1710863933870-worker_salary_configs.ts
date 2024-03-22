@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableIndex } from "typeorm";
 
 export class workerSalaryConfigs1710863933870 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -70,6 +70,12 @@ export class workerSalaryConfigs1710863933870 implements MigrationInterface {
       }),
       true
     );
+    await queryRunner.createIndices("worker_salary_configs", [
+      new TableIndex({
+        columnNames: ["company_id"],
+        isUnique: false,
+      }),
+    ]);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {}

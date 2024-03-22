@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableIndex } from "typeorm";
 
 export class jobs1711014723466 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -65,6 +65,12 @@ export class jobs1711014723466 implements MigrationInterface {
       }),
       true
     );
+    await queryRunner.createIndices("jobs", [
+      new TableIndex({
+        columnNames: ["date"],
+        isUnique: false,
+      }),
+    ]);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {}
