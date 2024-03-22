@@ -47,7 +47,9 @@ jobs:
       - name: Install yarn && Install dependencies
         run: npm install yarn -g && yarn && yarn list
       - name: Setup env
-        run: cp ci/.env.ci .env && cat .env && cat .env.test
+        run: cp .env.test .env && cat .env && cat .env.test
+      - name: Show PostgreSQL logs
+        run: docker logs postgres
       - name: Test
         run: |
           npm run typeorm:test
