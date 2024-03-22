@@ -32,4 +32,18 @@ export class WorkerSalaryConfigRepository extends Repository<WorkerSalaryConfigE
       },
     });
   }
+
+  /**
+   * @description Get worker config salary by id
+   * @param workerConfigId
+   */
+  public async getWorkerConfigById(
+    workerConfigId: number
+  ): Promise<WorkerSalaryConfigEntity> {
+    return await this.findOne({
+      where: {
+        id: workerConfigId,
+      },
+    });
+  }
 }

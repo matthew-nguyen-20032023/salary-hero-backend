@@ -1,23 +1,25 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Post,
   Put,
   Query,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { PartnerConfigService } from "src/modules/partner-config/partner-config.service";
-import { Roles } from "src/modules/authentication/auth.const";
-import { UserRole } from "src/models/entities/user.entity";
-import { IResponseToClient } from "src/configs/response-to-client.config";
-import { PartnerUpdateInfoDto } from "src/modules/partner-config/dto/partner-update-info.dto";
-import { PartnerMessageSuccess } from "src/modules/partner-config/partner-config.const";
-import { UserEmail } from "src/decorators/user-email.decorator";
-import { ListWorkerDto } from "src/modules/partner-config/dto/list-worker.dto";
 import { UserId } from "src/decorators/user-id.decorator";
+import { UserRole } from "src/models/entities/user.entity";
+import { Roles } from "src/modules/authentication/auth.const";
+import { UserEmail } from "src/decorators/user-email.decorator";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { IResponseToClient } from "src/configs/response-to-client.config";
+import { ListWorkerDto } from "src/modules/partner-config/dto/list-worker.dto";
+import { PartnerMessageSuccess } from "src/modules/partner-config/partner-config.const";
+import { PartnerConfigService } from "src/modules/partner-config/partner-config.service";
+import { PartnerUpdateInfoDto } from "src/modules/partner-config/dto/partner-update-info.dto";
 import { ConfigWorkerSalaryDto } from "src/modules/partner-config/dto/config-worker-salary.dto";
+import { DeActiveWorkerSalaryConfigDto } from "src/modules/partner-config/dto/de-active-worker-salary-config.dto";
 
 @Controller("partner-config")
 @ApiTags("Partner")
@@ -84,6 +86,26 @@ export class PartnerConfigController {
       configWorkerSalaryDto.workerEmail,
       configWorkerSalaryDto.standardWorkingDay,
       configWorkerSalaryDto.baseSalary
+    );
+    return {
+      message: PartnerMessageSuccess.ConfigWorkerSalarySuccess,
+      data,
+      statusCode: HttpStatus.CREATED,
+    };
+  }
+
+  @Delete("de-active-worker-salary")
+  @ApiOperation({
+    summary:
+      "[Partner] Api to partner for de-active their worker salary config",
+  })
+  async deActiveWorkerSalary(
+    @UserId() partnerId: number,
+    @Body() deActiveWorkerSalaryConfigDto: DeActiveWorkerSalaryConfigDto
+  ): Promise<IResponseToClient> {
+    const data = await this.partnerService.deActiveWorkerSalaryConfig(
+      partnerId,
+      deActiveWorkerSalaryConfigDto.workerSalaryConfigId
     );
     return {
       message: PartnerMessageSuccess.ConfigWorkerSalarySuccess,
