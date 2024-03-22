@@ -26,7 +26,9 @@ export class WorkerReportController {
     const data = await this.workerReportService.getWorkerSalary(
       userEmail,
       getSalaryHistoryDto.page,
-      getSalaryHistoryDto.limit
+      getSalaryHistoryDto.limit,
+      getSalaryHistoryDto.fromTimestamp,
+      getSalaryHistoryDto.toTimestamp
     );
     return {
       message: WorkerReportMessageSuccess.ListSalaryHistorySuccess,

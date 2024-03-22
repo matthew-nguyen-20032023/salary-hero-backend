@@ -13,21 +13,29 @@ export class WorkerReportService {
    * @param workerEmail
    * @param page
    * @param limit
+   * @param fromTimestamp
+   * @param toTimestamp
    */
   public async getWorkerSalary(
     workerEmail: string,
     page: number,
-    limit: number
+    limit: number,
+    fromTimestamp: number,
+    toTimestamp: number
   ): Promise<{ data: WorkerSalaryHistoryEntity[]; total: number }> {
     const history =
       await this.workerSalaryHistoryRepository.getWorkerSalaryHistory(
         workerEmail,
         page,
-        limit
+        limit,
+        fromTimestamp,
+        toTimestamp
       );
     const total =
       await this.workerSalaryHistoryRepository.countTotalWorkerHistory(
-        workerEmail
+        workerEmail,
+        fromTimestamp,
+        toTimestamp
       );
     return {
       data: history,
