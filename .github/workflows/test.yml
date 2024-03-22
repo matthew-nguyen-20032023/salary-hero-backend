@@ -10,10 +10,9 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13-alpine
+        image: postgres
         env:
           POSTGRES_PASSWORD: admin@123
-          POSTGRES_USER: postgres
           POSTGRES_DB: test_salary_hero
         options: >-
           --health-cmd pg_isready
@@ -48,7 +47,7 @@ jobs:
       - name: Install yarn && Install dependencies
         run: npm install yarn -g && yarn && yarn list
       - name: Setup env
-        run: cp .env.test .env
+        run: cp ci/.env.ci .env
       - name: Test
         env:
           NODE_ENV: development
