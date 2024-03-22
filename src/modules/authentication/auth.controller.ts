@@ -5,14 +5,14 @@ import {
   Public,
   Roles,
 } from "src/modules/authentication/auth.const";
-import { IResponseToClient } from "src/configs/response-to-client.config";
-import { LoginDto } from "src/modules/authentication/dto/login.dto";
-import { RegisterDto } from "src/modules/authentication/dto/register.dto";
-import { AuthService } from "src/modules/authentication/auth.service";
-import { UserRole } from "src/models/entities/user.entity";
 import { UserId } from "src/decorators/user-id.decorator";
-import { ChangePasswordDto } from "./dto/change-password.dto";
-import { UserEmail } from "../../decorators/user-email.decorator";
+import { UserRole } from "src/models/entities/user.entity";
+import { UserEmail } from "src/decorators/user-email.decorator";
+import { LoginDto } from "src/modules/authentication/dto/login.dto";
+import { AuthService } from "src/modules/authentication/auth.service";
+import { IResponseToClient } from "src/configs/response-to-client.config";
+import { RegisterDto } from "src/modules/authentication/dto/register.dto";
+import { ChangePasswordDto } from "src/modules/authentication/dto/change-password.dto";
 
 @Controller("auth")
 @ApiTags("Authentication")
