@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, Max, Min } from "class-validator";
 import { Type } from "class-transformer";
 
-export class ListWorkerDto {
+export class GetSalaryHistoryDto {
   @Type(() => Number)
   @IsNotEmpty()
   @ApiProperty({
