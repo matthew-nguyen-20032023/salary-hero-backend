@@ -1,0 +1,62 @@
+name: Test
+
+on:
+  pull_request:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: [ubuntu-latest]
+
+    services:
+      postgres:
+        image: postgres:13-alpine
+        env:
+          POSTGRES_PASSWORD: admin@123
+          POSTGRES_USER: postgres
+          POSTGRES_DB: test_salary_hero
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:6-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.20.1'
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
+      - name: Install dependencies
+        run: npm install
+      - name: Test
+        env:
+          NODE_ENV: testing
+          POSTGRES_PASSWORD: admin@123
+          POSTGRES_USER: postgres
+          POSTGRES_DB_TEST: test_salary_hero
+        run: |
+          npm run typeorm:test
+          npm run test
