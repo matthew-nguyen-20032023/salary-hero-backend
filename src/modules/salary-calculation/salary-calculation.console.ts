@@ -58,6 +58,11 @@ export class SalaryCalculationConsole {
     return new Promise(() => {});
   }
 
+  /**
+   * @description Core logic related to worker salary
+   * @param datetime
+   * @param workerConfigSalary
+   */
   public async calculateDailyWorkerSalary(
     datetime: number,
     workerConfigSalary: WorkerSalaryConfigEntity
