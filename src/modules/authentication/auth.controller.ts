@@ -1,16 +1,18 @@
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, HttpStatus, Post, Put } from "@nestjs/common";
 import {
   AuthMessageSuccess,
   Public,
   Roles,
 } from "src/modules/authentication/auth.const";
-import { IResponseToClient } from "src/configs/response-to-client.config";
-import { LoginDto } from "src/modules/authentication/dto/login.dto";
-import { RegisterDto } from "src/modules/authentication/dto/register.dto";
-import { AuthService } from "src/modules/authentication/auth.service";
-import { UserRole } from "src/models/entities/user.entity";
 import { UserId } from "src/decorators/user-id.decorator";
+import { UserRole } from "src/models/entities/user.entity";
+import { UserEmail } from "src/decorators/user-email.decorator";
+import { LoginDto } from "src/modules/authentication/dto/login.dto";
+import { AuthService } from "src/modules/authentication/auth.service";
+import { IResponseToClient } from "src/configs/response-to-client.config";
+import { RegisterDto } from "src/modules/authentication/dto/register.dto";
+import { ChangePasswordDto } from "src/modules/authentication/dto/change-password.dto";
 
 @Controller("auth")
 @ApiTags("Authentication")
@@ -77,6 +79,27 @@ export class AuthController {
     );
     return {
       message: AuthMessageSuccess.LoginSuccessMessage,
+      data,
+      statusCode: HttpStatus.OK,
+    };
+  }
+
+  @ApiBearerAuth()
+  @Put("change-password")
+  @ApiOperation({
+    summary: "[ALL] Api for all type of user login to change their password",
+  })
+  async changePassword(
+    @UserEmail() userEmail: string,
+    @Body() changePasswordDto: ChangePasswordDto
+  ): Promise<IResponseToClient> {
+    const data = await this.authService.changePassword(
+      userEmail,
+      changePasswordDto.currentPassword,
+      changePasswordDto.newPassword
+    );
+    return {
+      message: AuthMessageSuccess.ChangePasswordSuccess,
       data,
       statusCode: HttpStatus.OK,
     };
