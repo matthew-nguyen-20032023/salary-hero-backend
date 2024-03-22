@@ -49,8 +49,10 @@ jobs:
         name: List the state of node modules
         continue-on-error: true
         run: npm list
+      - name: Install yarn
+        run: npm install yarn -g
       - name: Install dependencies
-        run: npm install
+          run: yarn
       - name: Test
         env:
           NODE_ENV: testing
@@ -59,5 +61,4 @@ jobs:
           POSTGRES_DB_TEST: test_salary_hero
         run: |
           npm run typeorm:test
-          npm run test
-
+          yarn test
