@@ -60,3 +60,4 @@ jobs:
         run: |
           npm run typeorm:test
           npm run test
+
