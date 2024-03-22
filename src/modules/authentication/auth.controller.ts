@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, HttpStatus, Post, Put } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Post, Put } from "@nestjs/common";
 import {
   AuthMessageSuccess,
   Public,
@@ -13,6 +13,7 @@ import { AuthService } from "src/modules/authentication/auth.service";
 import { IResponseToClient } from "src/configs/response-to-client.config";
 import { RegisterDto } from "src/modules/authentication/dto/register.dto";
 import { ChangePasswordDto } from "src/modules/authentication/dto/change-password.dto";
+import { RefreshTokenDto } from "./dto/refresh-token.dto";
 
 @Controller("auth")
 @ApiTags("Authentication")
@@ -102,6 +103,25 @@ export class AuthController {
       message: AuthMessageSuccess.ChangePasswordSuccess,
       data,
       statusCode: HttpStatus.OK,
+    };
+  }
+
+  @Post("refresh-token")
+  @ApiOperation({
+    summary:
+      "[ALL] Api to get new token from refresh token, so that user dont need to login again when their token expire",
+  })
+  @Public()
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto
+  ): Promise<IResponseToClient> {
+    const data = await this.authService.refreshToken(
+      refreshTokenDto.refreshToken
+    );
+    return {
+      message: AuthMessageSuccess.RefreshTokenSuccessfully,
+      data,
+      statusCode: HttpStatus.CREATED,
     };
   }
 }

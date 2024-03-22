@@ -1,9 +1,9 @@
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { AuthMessageFailed } from "src/modules/authentication/auth.const";
-import { UserRepository } from "src/models/repositories/user.repository";
 import { UserEntity, UserRole } from "src/models/entities/user.entity";
+import { UserRepository } from "src/models/repositories/user.repository";
+import { AuthMessageFailed } from "src/modules/authentication/auth.const";
 
 @Injectable()
 export class AuthService {
@@ -61,7 +61,7 @@ export class AuthService {
   public async login(
     identify: string,
     password: string
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string; refresh_token: string }> {
     const user = await this.userRepository.getUserByUserNameOrEmail([identify]);
     if (!user) {
       throw new HttpException(
@@ -81,11 +81,16 @@ export class AuthService {
         HttpStatus.BAD_REQUEST
       );
 
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
     return {
-      access_token: await this.jwtService.signAsync({
-        id: user.id,
-        email: user.email,
-        role: user.role,
+      access_token: await this.jwtService.signAsync(payload),
+      refresh_token: await this.jwtService.signAsync(payload, {
+        expiresIn: process.env.JWT_REFRESH_EXP,
+        secret: process.env.JWT_REFRESH_SECRET,
       }),
     };
   }
@@ -122,5 +127,32 @@ export class AuthService {
     user.password = await bcrypt.hash(newPassword, salt);
     await this.userRepository.save(user);
     return true;
+  }
+
+  /**
+   * @description Get new account token from refresh token
+   * @param refreshToken
+   */
+  async refreshToken(refreshToken: string): Promise<{ access_token: string }> {
+    try {
+      const refreshTokenDecode = await this.jwtService.verifyAsync(
+        refreshToken,
+        {
+          secret: process.env.JWT_REFRESH_SECRET,
+        }
+      );
+      return {
+        access_token: await this.jwtService.signAsync({
+          id: refreshTokenDecode.id,
+          email: refreshTokenDecode.email,
+          role: refreshTokenDecode.role,
+        }),
+      };
+    } catch (error) {
+      throw new HttpException(
+        { message: AuthMessageFailed.InvalidRefreshToken },
+        HttpStatus.BAD_REQUEST
+      );
+    }
   }
 }
