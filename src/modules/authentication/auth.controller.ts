@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, HttpStatus, Post, Put } from "@nestjs/common";
 import {
   AuthMessageSuccess,
   Public,
@@ -11,6 +11,8 @@ import { RegisterDto } from "src/modules/authentication/dto/register.dto";
 import { AuthService } from "src/modules/authentication/auth.service";
 import { UserRole } from "src/models/entities/user.entity";
 import { UserId } from "src/decorators/user-id.decorator";
+import { ChangePasswordDto } from "./dto/change-password.dto";
+import { UserEmail } from "../../decorators/user-email.decorator";
 
 @Controller("auth")
 @ApiTags("Authentication")
@@ -77,6 +79,27 @@ export class AuthController {
     );
     return {
       message: AuthMessageSuccess.LoginSuccessMessage,
+      data,
+      statusCode: HttpStatus.OK,
+    };
+  }
+
+  @ApiBearerAuth()
+  @Put("change-password")
+  @ApiOperation({
+    summary: "[ALL] Api for all type of user login to change their password",
+  })
+  async changePassword(
+    @UserEmail() userEmail: string,
+    @Body() changePasswordDto: ChangePasswordDto
+  ): Promise<IResponseToClient> {
+    const data = await this.authService.changePassword(
+      userEmail,
+      changePasswordDto.currentPassword,
+      changePasswordDto.newPassword
+    );
+    return {
+      message: AuthMessageSuccess.ChangePasswordSuccess,
       data,
       statusCode: HttpStatus.OK,
     };

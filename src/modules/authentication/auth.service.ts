@@ -56,12 +56,13 @@ export class AuthService {
    * @param identify can be username or email as well
    * @param password
    */
+  // TODO: Implement captcha for login failed after 5 times
+  // TODO: Implement lock account after 10 times failed login for secure
   public async login(
     identify: string,
     password: string
   ): Promise<{ access_token: string }> {
     const user = await this.userRepository.getUserByUserNameOrEmail([identify]);
-
     if (!user) {
       throw new HttpException(
         {
@@ -72,7 +73,6 @@ export class AuthService {
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-
     if (!isPasswordMatch)
       throw new HttpException(
         {
@@ -88,5 +88,39 @@ export class AuthService {
         role: user.role,
       }),
     };
+  }
+
+  /**
+   * @description: Api to change password
+   * @param userEmail
+   * @param currentPassword
+   * @param newPassword
+   */
+  // TODO: Need to implement password policy for strong and safe password
+  public async changePassword(
+    userEmail: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<Boolean> {
+    const user = await this.userRepository.getUserByUserNameOrEmail([
+      userEmail,
+    ]);
+    const isPasswordMatch = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if (!isPasswordMatch) {
+      throw new HttpException(
+        {
+          message: AuthMessageFailed.InvalidCurrentPassword,
+        },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const salt = await bcrypt.genSalt(Number(process.env.SALT_OR_ROUNDS));
+    user.password = await bcrypt.hash(newPassword, salt);
+    await this.userRepository.save(user);
+    return true;
   }
 }
