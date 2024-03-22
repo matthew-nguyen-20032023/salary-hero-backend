@@ -47,13 +47,8 @@ jobs:
       - name: Install yarn && Install dependencies
         run: npm install yarn -g && yarn && yarn list
       - name: Setup env
-        run: cp ci/.env.ci .env
+        run: cp ci/.env.ci .env && cat .env && cat .env.test
       - name: Test
-        env:
-          NODE_ENV: development
-          POSTGRES_PASSWORD: admin@123
-          POSTGRES_USER: postgres
-          POSTGRES_DB_TEST: test_salary_hero
         run: |
           npm run typeorm:test
           yarn test
