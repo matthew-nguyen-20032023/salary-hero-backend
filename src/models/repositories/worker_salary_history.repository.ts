@@ -1,4 +1,11 @@
-import { EntityRepository, LessThan, Repository } from "typeorm";
+import {
+  Between,
+  EntityRepository,
+  LessThan,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from "typeorm";
 import { WorkerSalaryHistoryEntity } from "src/models/entities/worker_salary_history.entity";
 
 @EntityRepository(WorkerSalaryHistoryEntity)
@@ -47,16 +54,27 @@ export class WorkerSalaryHistoryRepository extends Repository<WorkerSalaryHistor
    * @param workerEmail
    * @param page
    * @param limit
+   * @param fromTimestamp
+   * @param toTimestamp
    */
   public async getWorkerSalaryHistory(
     workerEmail: string,
     page: number,
-    limit: number
+    limit: number,
+    fromTimestamp: number,
+    toTimestamp: number
   ): Promise<WorkerSalaryHistoryEntity[]> {
+    const condition = {
+      worker_email: workerEmail,
+    };
+    if (fromTimestamp && toTimestamp) {
+      condition["date"] = Between(fromTimestamp, toTimestamp);
+    } else {
+      if (fromTimestamp) condition["date"] = MoreThanOrEqual(fromTimestamp);
+      if (toTimestamp) condition["date"] = LessThanOrEqual(toTimestamp);
+    }
     return await this.find({
-      where: {
-        worker_email: workerEmail,
-      },
+      where: condition,
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -65,12 +83,26 @@ export class WorkerSalaryHistoryRepository extends Repository<WorkerSalaryHistor
   /**
    * @description Count total worker salary history by email
    * @param workerEmail
+   * @param fromTimestamp
+   * @param toTimestamp
    */
-  public async countTotalWorkerHistory(workerEmail: string): Promise<number> {
+  public async countTotalWorkerHistory(
+    workerEmail: string,
+    fromTimestamp: number,
+    toTimestamp: number
+  ): Promise<number> {
+    const condition = {
+      worker_email: workerEmail,
+    };
+    if (fromTimestamp && toTimestamp) {
+      condition["date"] = Between(fromTimestamp, toTimestamp);
+    } else {
+      if (fromTimestamp) condition["date"] = MoreThanOrEqual(fromTimestamp);
+      if (toTimestamp) condition["date"] = LessThanOrEqual(toTimestamp);
+    }
+
     return await this.count({
-      where: {
-        worker_email: workerEmail,
-      },
+      where: condition,
     });
   }
 }
