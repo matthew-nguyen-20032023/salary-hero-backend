@@ -1,19 +1,25 @@
 import { getConnection } from "typeorm";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { CompanyInfoRepository } from "src/models/repositories/company_info.repository";
-import { CompanyInfoEntity } from "src/models/entities/company_info.entity";
 import { UserEntity } from "src/models/entities/user.entity";
 import { UserRepository } from "src/models/repositories/user.repository";
-import { WorkerSalaryConfigEntity } from "src/models/entities/worker_salary_config.entity";
+import {
+  LockUnLockAction,
+  WorkerWalletEntity,
+} from "src/models/entities/worker_wallet.entity";
+import { CompanyInfoEntity } from "src/models/entities/company_info.entity";
 import { PartnerMessageFailed } from "src/modules/partner-config/partner-config.const";
+import { CompanyInfoRepository } from "src/models/repositories/company_info.repository";
+import { WorkerWalletRepository } from "src/models/repositories/worker_wallet.repository";
+import { WorkerSalaryConfigEntity } from "src/models/entities/worker_salary_config.entity";
 import { WorkerSalaryConfigRepository } from "src/models/repositories/worker_salary_config.repository";
 
 @Injectable()
 export class PartnerConfigService {
   constructor(
-    public readonly workerSalaryConfigRepository: WorkerSalaryConfigRepository,
+    public readonly userRepository: UserRepository,
     public readonly companyInfoRepository: CompanyInfoRepository,
-    public readonly userRepository: UserRepository
+    public readonly workerWalletRepository: WorkerWalletRepository,
+    public readonly workerSalaryConfigRepository: WorkerSalaryConfigRepository
   ) {}
 
   /**
@@ -161,6 +167,40 @@ export class PartnerConfigService {
     }
     workerSalaryConfig.is_active = false;
     return await this.workerSalaryConfigRepository.save(workerSalaryConfig);
+  }
+
+  /**
+   * @description Support partner lock and unlock their worker wallet
+   * @param partnerId
+   * @param workerEmail
+   * @param action
+   */
+  public async lockOrUnlockWorkerWallet(
+    partnerId: number,
+    workerEmail: string,
+    action: LockUnLockAction
+  ): Promise<WorkerWalletEntity> {
+    const isPartnerWorker = await this.isPartnerWorker(partnerId, workerEmail);
+    if (!isPartnerWorker) {
+      throw new HttpException(
+        { message: PartnerMessageFailed.InvalidWorker },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const workerWallet =
+      await this.workerWalletRepository.getWorkerWalletByWorkerEmail(
+        workerEmail
+      );
+    if (!workerWallet) {
+      throw new HttpException(
+        { message: PartnerMessageFailed.InvalidWorkerWallet },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    workerWallet.is_active = action === LockUnLockAction.Unlock;
+    return await this.workerWalletRepository.save(workerWallet);
   }
 
   /**

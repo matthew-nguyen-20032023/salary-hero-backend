@@ -59,6 +59,12 @@ export class WalletService {
     history: WorkerWalletHistoryEntity;
   }> {
     const senderWallet = await this.getWorkerWallet(senderEmail);
+    if (!senderWallet.is_active) {
+      throw new HttpException(
+        { message: WalletMessageFailed.WalletLocked },
+        HttpStatus.BAD_REQUEST
+      );
+    }
 
     // Only available balance allow, pending balance need to wait n (as we config) day for added to available balance
     if (senderWallet.available_balance < amount) {
@@ -139,6 +145,12 @@ export class WalletService {
     history: WorkerWalletHistoryEntity;
   }> {
     const workerWallet = await this.getWorkerWallet(workerEmail);
+    if (!workerWallet.is_active) {
+      throw new HttpException(
+        { message: WalletMessageFailed.WalletLocked },
+        HttpStatus.BAD_REQUEST
+      );
+    }
 
     if (workerWallet.available_balance < amount) {
       throw new HttpException(
