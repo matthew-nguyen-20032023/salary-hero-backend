@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableIndex } from "typeorm";
 
 export class workerWalletHistories1711009720195 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -63,6 +63,12 @@ export class workerWalletHistories1711009720195 implements MigrationInterface {
       }),
       true
     );
+    await queryRunner.createIndices("worker_wallet_histories", [
+      new TableIndex({
+        columnNames: ["worker_email", "date"],
+        isUnique: false,
+      }),
+    ]);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {}
