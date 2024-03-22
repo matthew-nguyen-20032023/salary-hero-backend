@@ -131,6 +131,39 @@ export class PartnerConfigService {
   }
 
   /**
+   * @description de-active worker salary config, only support employee of specific
+   * @param partnerId
+   * @param configId
+   */
+  public async deActiveWorkerSalaryConfig(
+    partnerId: number,
+    configId: number
+  ): Promise<WorkerSalaryConfigEntity> {
+    const workerSalaryConfig =
+      await this.workerSalaryConfigRepository.getWorkerConfigById(configId);
+
+    if (!workerSalaryConfig || !workerSalaryConfig.is_active) {
+      throw new HttpException(
+        { message: PartnerMessageFailed.InvalidWorkerConfig },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const workerAccount = await this.userRepository.getUserByUserNameOrEmail([
+      workerSalaryConfig.user_email,
+    ]);
+
+    if (workerAccount.created_by !== partnerId) {
+      throw new HttpException(
+        { message: PartnerMessageFailed.InvalidWorkerConfig },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    workerSalaryConfig.is_active = false;
+    return await this.workerSalaryConfigRepository.save(workerSalaryConfig);
+  }
+
+  /**
    * @description check that worker belongs to partner or not, partner only can set up their worker salary
    * @param partnerId
    * @param workerEmail
