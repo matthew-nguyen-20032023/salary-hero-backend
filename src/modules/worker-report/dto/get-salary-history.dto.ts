@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, Max, Min } from "class-validator";
 import { Type } from "class-transformer";
 
 export class GetSalaryHistoryDto {
@@ -10,6 +10,7 @@ export class GetSalaryHistoryDto {
     required: true,
     example: 1,
   })
+  @Min(1)
   page: number;
 
   @Type(() => Number)
@@ -19,5 +20,7 @@ export class GetSalaryHistoryDto {
     required: false,
     example: 10,
   })
+  @Min(1)
+  @Max(100)
   limit: number;
 }
