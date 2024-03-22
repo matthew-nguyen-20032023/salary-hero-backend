@@ -58,6 +58,11 @@ export class SalaryCalculationConsole {
     return new Promise(() => {});
   }
 
+  /**
+   * @description Core logic related to worker salary
+   * @param datetime
+   * @param workerConfigSalary
+   */
   public async calculateDailyWorkerSalary(
     datetime: number,
     workerConfigSalary: WorkerSalaryConfigEntity
@@ -106,9 +111,16 @@ export class SalaryCalculationConsole {
       workerWallet.available_balance = 0;
       workerWallet.pending_balance = Number(dailyIncome.toFixed(3));
     } else {
-      workerWallet.pending_balance = Number(
-        (workerWallet.pending_balance + dailyIncome).toFixed(3)
-      );
+      // Exist pending balance of previous calculation, then added to available balance
+      if (workerWallet.pending_balance > 0) {
+        workerWallet.available_balance = Number(
+          (
+            workerWallet.available_balance + workerWallet.pending_balance
+          ).toFixed(3)
+        );
+      }
+      // Pending balance always setup to dailyIncome each time calculation
+      workerWallet.pending_balance = Number(dailyIncome.toFixed(3));
     }
 
     await getConnection().transaction(async (transaction) => {
