@@ -41,6 +41,8 @@ jobs:
             ${{ runner.os }}-
       - name: Install yarn && Install dependencies
         run: npm install yarn -g && yarn && yarn list
+      - name: Build APP
+        run: yarn build
       - name: Setup env
         run: cp .env.test .env
       - name: Migration
