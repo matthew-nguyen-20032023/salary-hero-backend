@@ -64,12 +64,14 @@ export class InitSalaryWorkerJobTask {
         messages: [{ value: messageSend }],
       });
       this.logger.log(
-        `Kafka message send to calculate salary for worker ${workerConfigSalary.user_email} at ${datetime}`
+        `Kafka message send to calculate salary for worker ${
+          workerConfigSalary.user_email
+        } at ${new Date(datetime)}`
       );
     }
 
     pendingJob.status = JobStatus.Completed;
-    pendingJob.note = `Kafka message send to calculate salary for all worker of company at ${new Date()}`;
+    pendingJob.note = `Kafka message send to calculate salary for all worker of company at server time ${new Date()}`;
     await this.jobRepository.save(pendingJob);
   }
 }

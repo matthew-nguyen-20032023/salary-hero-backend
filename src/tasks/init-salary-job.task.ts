@@ -8,6 +8,7 @@ import {
   JobStatus,
   JobType,
 } from "src/models/entities/job.entity";
+import { CompanyInfoEntity } from "src/models/entities/company_info.entity";
 import { CompanyInfoRepository } from "src/models/repositories/company_info.repository";
 
 /**
@@ -21,20 +22,78 @@ export class InitSalaryJobTask {
     public readonly companyInfoRepository: CompanyInfoRepository
   ) {}
 
+  /**
+   * @description Determine timezone need to calculate by formula current time (In UTC+0) + timezone have to equal 0 or 24
+   * @MaTrix
+   *      00:00 utc => timezoneCalculate = 0;
+   *      01:00 utc => timezoneCalculate = -1;
+   *      02:00 utc => timezoneCalculate = -2;
+   *      ...
+   *      10:00 utc => timezoneCalculate = 14 | -10;
+   *      11:00 utc => timezoneCalculate = 13 | -11;
+   *      12:00 utc => timezoneCalculate = 12 | -12;
+   *      13:00 utc => timezoneCalculate = 11;
+   *      14:00 utc => timezoneCalculate = 10;
+   *      15:00 utc => timezoneCalculate = 9;
+   *      ...
+   *
+   * @param currentTimeIn0UTCInHour
+   */
+  public getTimezoneNeedToCalculate(currentTimeIn0UTCInHour: number): number[] {
+    // Only need to get company with negative time zone
+    if (currentTimeIn0UTCInHour >= 0 && currentTimeIn0UTCInHour <= 9) {
+      return [-currentTimeIn0UTCInHour];
+    }
+
+    // Need to get both company with negative time zone and positive time zone
+    if (currentTimeIn0UTCInHour >= 10 && currentTimeIn0UTCInHour <= 12) {
+      return [-currentTimeIn0UTCInHour, 24 - currentTimeIn0UTCInHour];
+    }
+
+    // Only need to get company with positive time zone
+    return [24 - currentTimeIn0UTCInHour];
+  }
+  /**
+   * @description: With old logic, we select all company each time this schedule run, then we add their timezone to
+   * current time and check if there is no job for company at current time -> init job, otherwise will skip.
+   * So this old logic will may impact performance when we have a lot of company
+   * So instead of old logic select all company, we refactor it by determine only timezone need to calculate ->
+   * -> When timezone + current server time greater 00:00 and less than 01:00
+   * https://en.wikipedia.org/wiki/Coordinated_Universal_Time#:~:text=The%20westernmost%20time%20zone%20uses,be%20on%20the%20same%20day.
+   * Follow wikipedia we have minimum time zone is -12 UTC, and maximum timezone is +14 UTC
+   */
+  public async getCompanyNeedToCalculateSalary(
+    currentServerTime: moment.Moment
+  ): Promise<CompanyInfoEntity[]> {
+    const currentTimeIn0UTCInHour = currentServerTime.utc().hour();
+    const listTimezoneNeedToCalculate = this.getTimezoneNeedToCalculate(
+      currentTimeIn0UTCInHour
+    );
+    this.logger.log(
+      `Current server time in UTC0 is ${currentTimeIn0UTCInHour}. Finding companies with timezone ${listTimezoneNeedToCalculate}`
+    );
+    return await this.companyInfoRepository.getAllCompanyWithTimezones(
+      listTimezoneNeedToCalculate
+    );
+  }
+
   @Cron(CronExpression.EVERY_30_SECONDS)
   public async handleCron() {
-    const listCompany = await this.companyInfoRepository.getAllCompany();
+    const currentServerTime = moment();
+    const listCompany = await this.getCompanyNeedToCalculateSalary(
+      currentServerTime
+    );
 
     if (listCompany.length === 0) {
       this.logger.log(
-        "There is no company found. Waiting for new one created!"
+        "There is no company found for timezones. Waiting for new one created!"
       );
       return;
     }
 
     const jobs: JobEntity[] = [];
     for (const companyInfo of listCompany) {
-      const currentCompanyDateTime = moment()
+      const currentCompanyDateTime = currentServerTime
         .utc() // Get current time at UTC +0
         .add(companyInfo.timezone, "hours") // Add company timezone to get current company time
         .set({ hour: 0, minute: 0, second: 0, millisecond: 0 }) // Round hour, minute and second to 0
@@ -65,6 +124,9 @@ export class InitSalaryJobTask {
       newJob.date = companyTimeZoneCalculateSalary;
       newJob.job_type = JobType.WorkerSalaryCalculate;
       jobs.push(newJob);
+      this.logger.log(
+        `Create job calculate salary for company ${companyInfo.id} in date ${currentCompanyDateTime}`
+      );
     }
 
     if (jobs.length === 0) {
