@@ -8,7 +8,7 @@ import { AuthMessageFailed } from "src/modules/authentication/auth.const";
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userRepository: UserRepository,
+    public readonly userRepository: UserRepository,
     public jwtService: JwtService
   ) {}
 
