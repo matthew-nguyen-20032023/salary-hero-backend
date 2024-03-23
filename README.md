@@ -64,6 +64,15 @@ $ yarn console:dev calculate-worker-salary
 # For production run
 $ node dist/src/console.js calculate-worker-salary
 ```
+
+### Note
+After full setup and seeding data, we have some account seeded </br>
+AdminAccount: admin@gmail.com </br>
+PartnerAccount: partner@gmail.com </br>
+WorkerAccount: worker@gmail.com </br>
+Password for all: admin@123 </br>
+API Swagger: http://localhost:3000/api/docs/
+
 ### Testing
 ```bash
 $ yarn test
