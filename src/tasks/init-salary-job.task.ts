@@ -40,6 +40,7 @@ export class InitSalaryJobTask {
    * @param currentTimeIn0UTCInHour
    */
   public getTimezoneNeedToCalculate(currentTimeIn0UTCInHour: number): number[] {
+    if (currentTimeIn0UTCInHour === 0) return [0];
     // Only need to get company with negative time zone
     if (currentTimeIn0UTCInHour >= 0 && currentTimeIn0UTCInHour <= 9) {
       return [-currentTimeIn0UTCInHour];
