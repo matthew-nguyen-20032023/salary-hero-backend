@@ -101,7 +101,10 @@ describe("Partner Config Service", () => {
       const mockPartnerCreated = await partnerConfigService.userRepository.save(
         mockPartner
       );
-      const mockCompanyInfo = mockRandomCompanyInfo(mockPartnerCreated.email);
+      const mockCompanyInfo = mockRandomCompanyInfo(
+        mockPartnerCreated.email,
+        0
+      );
       await partnerConfigService.companyInfoRepository.save(mockCompanyInfo);
       const mockAnotherWorker = mockRandomUser(
         UserRole.Worker,
@@ -133,7 +136,10 @@ describe("Partner Config Service", () => {
       const mockPartnerCreated = await partnerConfigService.userRepository.save(
         mockPartner
       );
-      const mockCompanyInfo = mockRandomCompanyInfo(mockPartnerCreated.email);
+      const mockCompanyInfo = mockRandomCompanyInfo(
+        mockPartnerCreated.email,
+        0
+      );
       const mockCompanyInfoCreated =
         await partnerConfigService.companyInfoRepository.save(mockCompanyInfo);
       const mockPartnerWorker = mockRandomUser(
@@ -164,7 +170,10 @@ describe("Partner Config Service", () => {
       const mockPartnerCreated = await partnerConfigService.userRepository.save(
         mockPartner
       );
-      const mockCompanyInfo = mockRandomCompanyInfo(mockPartnerCreated.email);
+      const mockCompanyInfo = mockRandomCompanyInfo(
+        mockPartnerCreated.email,
+        0
+      );
       const mockCompanyInfoCreated =
         await partnerConfigService.companyInfoRepository.save(mockCompanyInfo);
       const mockPartnerWorker = mockRandomUser(

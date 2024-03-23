@@ -37,6 +37,9 @@ export class CompanyInfoRepository extends Repository<CompanyInfoEntity> {
       where: {
         timezone: In(timezones),
       },
+      order: {
+        timezone: "ASC",
+      },
     });
   }
 }
