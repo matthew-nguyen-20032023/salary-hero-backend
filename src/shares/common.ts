@@ -46,3 +46,13 @@ export function generateRandomString(): string {
 
   return string;
 }
+
+// Random from 0 -> 24
+export function randomHour(): number {
+  return Math.floor(Math.random() * 24);
+}
+
+// Random from 0 -> 60
+export function randomMinute(): number {
+  return Math.floor(Math.random() * 60);
+}

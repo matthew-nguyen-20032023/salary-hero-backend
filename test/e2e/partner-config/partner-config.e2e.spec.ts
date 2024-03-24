@@ -45,6 +45,7 @@ describe("Partner Config Service", () => {
     const mockPartnerUpdateInfoDto = new PartnerUpdateInfoDto();
     mockPartnerUpdateInfoDto.companyName = "mock company name";
     mockPartnerUpdateInfoDto.companyDescription = "mock description";
+    mockPartnerUpdateInfoDto.timezone = 1500;
 
     it("Should be forbidden because not login", async () => {
       const response = await request(app.getHttpServer())

@@ -8,6 +8,7 @@ import {
   JobStatus,
   JobType,
 } from "src/models/entities/job.entity";
+import { DayInMinutes, HourInMinutes } from "src/tasks/task.const";
 import { CompanyInfoEntity } from "src/models/entities/company_info.entity";
 import { CompanyInfoRepository } from "src/models/repositories/company_info.repository";
 
@@ -38,21 +39,28 @@ export class InitSalaryJobTask {
    *      ...
    *
    * @param currentTimeIn0UTCInHour
+   * @param currentTimeIn0UTCInMinute
    */
-  public getTimezoneNeedToCalculate(currentTimeIn0UTCInHour: number): number[] {
-    if (currentTimeIn0UTCInHour === 0) return [0];
-    // Only need to get company with negative time zone
-    if (currentTimeIn0UTCInHour >= 0 && currentTimeIn0UTCInHour <= 9) {
-      return [-currentTimeIn0UTCInHour];
+  public getTimezoneNeedToCalculate(
+    currentTimeIn0UTCInHour: number,
+    currentTimeIn0UTCInMinute: number
+  ): number[] {
+    const timeDiffInMinute =
+      currentTimeIn0UTCInHour * HourInMinutes + currentTimeIn0UTCInMinute;
+
+    if (timeDiffInMinute === 0) return [0];
+    // Only need to get company with negative time zone (from 0 to 9 hour) convert to minutes
+    if (timeDiffInMinute >= 0 && timeDiffInMinute <= 540) {
+      return [-timeDiffInMinute];
     }
 
-    // Need to get both company with negative time zone and positive time zone
-    if (currentTimeIn0UTCInHour >= 10 && currentTimeIn0UTCInHour <= 12) {
-      return [-currentTimeIn0UTCInHour, 24 - currentTimeIn0UTCInHour];
+    // Need to get both company with negative time zone and positive time zone (from 10 to 12)
+    if (timeDiffInMinute >= 600 && timeDiffInMinute <= 720) {
+      return [-timeDiffInMinute, DayInMinutes - timeDiffInMinute];
     }
 
     // Only need to get company with positive time zone
-    return [24 - currentTimeIn0UTCInHour];
+    return [DayInMinutes - timeDiffInMinute];
   }
   /**
    * @description: With old logic, we select all company each time this schedule run, then we add their timezone to
@@ -67,11 +75,15 @@ export class InitSalaryJobTask {
     currentServerTime: moment.Moment
   ): Promise<CompanyInfoEntity[]> {
     const currentTimeIn0UTCInHour = currentServerTime.utc().hour();
+    const currentTimeIn0UTCInMinute = currentServerTime.utc().minute();
     const listTimezoneNeedToCalculate = this.getTimezoneNeedToCalculate(
-      currentTimeIn0UTCInHour
+      currentTimeIn0UTCInHour,
+      currentTimeIn0UTCInMinute
     );
     this.logger.log(
-      `Current server time in UTC0 is ${currentTimeIn0UTCInHour}. Finding companies with timezone ${listTimezoneNeedToCalculate}`
+      `Current server time in UTC0 is ${
+        currentTimeIn0UTCInHour * HourInMinutes + currentTimeIn0UTCInMinute
+      }. Finding companies with timezone ${listTimezoneNeedToCalculate}`
     );
     return await this.companyInfoRepository.getAllCompanyWithTimezones(
       listTimezoneNeedToCalculate
@@ -96,7 +108,7 @@ export class InitSalaryJobTask {
     for (const companyInfo of listCompany) {
       const currentCompanyDateTime = currentServerTime
         .utc() // Get current time at UTC +0
-        .add(companyInfo.timezone, "hours") // Add company timezone to get current company time
+        .add(companyInfo.timezone, "minutes") // Add company timezone to get current company time
         .set({ hour: 0, minute: 0, second: 0, millisecond: 0 }) // Round hour, minute and second to 0
         .subtract(Number(process.env.CALCULATE_SALARY_AFTER_DAY), "days") // Calculate salary after day
         .format("YYYY-MM-DD");
