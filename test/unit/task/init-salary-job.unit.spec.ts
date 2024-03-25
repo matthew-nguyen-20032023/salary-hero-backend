@@ -2,6 +2,8 @@ import * as moment from "moment";
 import Modules from "src/modules";
 import { Test } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
+import { DayInHours, DayInMinutes, HourInMinutes } from "src/tasks/task.const";
+import { randomHour, randomMinute } from "src/shares/common";
 import { InitSalaryJobTask } from "src/tasks/init-salary-job.task";
 import { mockRandomCompanyInfo } from "test/mock/mock-company-info-entity";
 import { CompanyInfoEntity } from "src/models/entities/company_info.entity";
@@ -21,6 +23,8 @@ describe("Task init salary job for company", () => {
     await app.init();
 
     initSalaryJobTask = moduleRef.get(InitSalaryJobTask);
+    // Reset all data
+    await initSalaryJobTask.companyInfoRepository.delete({});
   });
 
   describe("Test get timezone need to calculate", () => {
@@ -35,54 +39,59 @@ describe("Task init salary job for company", () => {
       const mockHour7 = 7;
       const mockHour8 = 8;
       const mockHour9 = 9;
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour0)).toEqual([
-        mockHour0,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour1)).toEqual([
-        -mockHour1,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour2)).toEqual([
-        -mockHour2,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour3)).toEqual([
-        -mockHour3,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour4)).toEqual([
-        -mockHour4,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour5)).toEqual([
-        -mockHour5,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour6)).toEqual([
-        -mockHour6,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour7)).toEqual([
-        -mockHour7,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour8)).toEqual([
-        -mockHour8,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour9)).toEqual([
-        -mockHour9,
-      ]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour0, 0)
+      ).toEqual([mockHour0 * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour1, 0)
+      ).toEqual([-mockHour1 * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour2, 0)
+      ).toEqual([-mockHour2 * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour3, 0)
+      ).toEqual([-mockHour3 * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour4, 0)
+      ).toEqual([-mockHour4 * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour5, 0)
+      ).toEqual([-mockHour5 * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour6, 0)
+      ).toEqual([-mockHour6 * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour7, 0)
+      ).toEqual([-mockHour7 * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour8, 0)
+      ).toEqual([-mockHour8 * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour9, 0)
+      ).toEqual([-mockHour9 * HourInMinutes]);
     });
 
     it("should return timezone for values between 10 and 12", () => {
       const mockHour10 = 10;
       const mockHour11 = 11;
       const mockHour12 = 12;
-      const hour24 = 24;
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour10)).toEqual([
-        -mockHour10,
-        hour24 - mockHour10,
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour10, 0)
+      ).toEqual([
+        -mockHour10 * HourInMinutes,
+        (DayInHours - mockHour10) * HourInMinutes,
       ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour11)).toEqual([
-        -mockHour11,
-        hour24 - mockHour11,
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour11, 0)
+      ).toEqual([
+        -mockHour11 * HourInMinutes,
+        (DayInHours - mockHour11) * HourInMinutes,
       ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour12)).toEqual([
-        -mockHour12,
-        hour24 - mockHour12,
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour12, 0)
+      ).toEqual([
+        -mockHour12 * HourInMinutes,
+        (DayInHours - mockHour12) * HourInMinutes,
       ]);
     });
 
@@ -98,73 +107,72 @@ describe("Task init salary job for company", () => {
       const mockHour21 = 21;
       const mockHour22 = 22;
       const mockHour23 = 23;
-      const hour24 = 24;
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour13)).toEqual([
-        hour24 - mockHour13,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour14)).toEqual([
-        hour24 - mockHour14,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour15)).toEqual([
-        hour24 - mockHour15,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour16)).toEqual([
-        hour24 - mockHour16,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour17)).toEqual([
-        hour24 - mockHour17,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour18)).toEqual([
-        hour24 - mockHour18,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour19)).toEqual([
-        hour24 - mockHour19,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour20)).toEqual([
-        hour24 - mockHour20,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour21)).toEqual([
-        hour24 - mockHour21,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour22)).toEqual([
-        hour24 - mockHour22,
-      ]);
-      expect(initSalaryJobTask.getTimezoneNeedToCalculate(mockHour23)).toEqual([
-        hour24 - mockHour23,
-      ]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour13, 0)
+      ).toEqual([(DayInHours - mockHour13) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour14, 0)
+      ).toEqual([(DayInHours - mockHour14) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour15, 0)
+      ).toEqual([(DayInHours - mockHour15) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour16, 0)
+      ).toEqual([(DayInHours - mockHour16) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour17, 0)
+      ).toEqual([(DayInHours - mockHour17) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour18, 0)
+      ).toEqual([(DayInHours - mockHour18) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour19, 0)
+      ).toEqual([(DayInHours - mockHour19) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour20, 0)
+      ).toEqual([(DayInHours - mockHour20) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour21, 0)
+      ).toEqual([(DayInHours - mockHour21) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour22, 0)
+      ).toEqual([(DayInHours - mockHour22) * HourInMinutes]);
+      expect(
+        initSalaryJobTask.getTimezoneNeedToCalculate(mockHour23, 0)
+      ).toEqual([(DayInHours - mockHour23) * HourInMinutes]);
     });
   });
 
   describe("Test get company need to calculate salary", () => {
     const serverTimezone = moment().utcOffset() / 60;
     const mockCompanies: CompanyInfoEntity[] = [];
-    const negative12 = -12;
-    const negative11 = -11;
-    const negative10 = -10;
-    const negative9 = -9;
-    const negative8 = -8;
-    const negative7 = -7;
-    const negative6 = -6;
-    const negative5 = -5;
-    const negative4 = -4;
-    const negative3 = -3;
-    const negative2 = -2;
-    const negative1 = -1;
+    const negative12 = -12 * HourInMinutes;
+    const negative11 = -11 * HourInMinutes;
+    const negative10 = -10 * HourInMinutes;
+    const negative9 = -9 * HourInMinutes;
+    const negative8 = -8 * HourInMinutes;
+    const negative7 = -7 * HourInMinutes;
+    const negative6 = -6 * HourInMinutes;
+    const negative5 = -5 * HourInMinutes;
+    const negative4 = -4 * HourInMinutes;
+    const negative3 = -3 * HourInMinutes;
+    const negative2 = -2 * HourInMinutes;
+    const negative1 = -1 * HourInMinutes;
     const positive0 = 0;
-    const positive1 = 1;
-    const positive2 = 2;
-    const positive3 = 3;
-    const positive4 = 4;
-    const positive5 = 5;
-    const positive6 = 6;
-    const positive7 = 7;
-    const positive8 = 8;
-    const positive9 = 9;
-    const positive10 = 10;
-    const positive11 = 11;
-    const positive12 = 12;
-    const positive13 = 13;
-    const positive14 = 14;
+    const positive1 = HourInMinutes;
+    const positive2 = 2 * HourInMinutes;
+    const positive3 = 3 * HourInMinutes;
+    const positive4 = 4 * HourInMinutes;
+    const positive5 = 5 * HourInMinutes;
+    const positive6 = 6 * HourInMinutes;
+    const positive7 = 7 * HourInMinutes;
+    const positive8 = 8 * HourInMinutes;
+    const positive9 = 9 * HourInMinutes;
+    const positive10 = 10 * HourInMinutes;
+    const positive11 = 11 * HourInMinutes;
+    const positive12 = 12 * HourInMinutes;
+    const positive13 = 13 * HourInMinutes;
+    const positive14 = 14 * HourInMinutes;
 
     mockCompanies[negative12] = mockRandomCompanyInfo(undefined, negative12);
     mockCompanies[negative11] = mockRandomCompanyInfo(undefined, negative11);
@@ -210,76 +218,115 @@ describe("Task init salary job for company", () => {
       }
     });
 
+    /**
+     * @description Base test for reuse
+     * @param minuteInUTC0
+     * @param expectedTimezone
+     */
     async function testGetCompanyNeedToCalculateSalary(
-      hourInUTC0: number,
-      listCompanyExpected: CompanyInfoEntity[]
+      minuteInUTC0: number,
+      expectedTimezone: number[]
     ): Promise<void> {
-      const convertHour = hourInUTC0 < 10 ? `0${hourInUTC0}` : hourInUTC0;
-      const serverTime = `2024-03-01 ${convertHour}:00:00`;
+      const startTime = `2024-03-01 00:00:00`;
+      const serverTime = moment(startTime).add(minuteInUTC0, "minutes");
       const listCompany =
-        await initSalaryJobTask.getCompanyNeedToCalculateSalary(
-          moment(serverTime)
-        );
-      expect(listCompany.length).toBe(listCompanyExpected.length);
-      listCompanyExpected.forEach((companyExpected, index) => {
-        expect(companyExpected.company_name).toBe(
-          listCompany[index].company_name
-        );
-        expect(companyExpected.timezone).toBe(listCompany[index].timezone);
+        await initSalaryJobTask.getCompanyNeedToCalculateSalary(serverTime);
+
+      listCompany.forEach((company, index) => {
+        const isIncludeTimezone = expectedTimezone.includes(company.timezone);
+        expect(isIncludeTimezone).toBe(true);
       });
     }
 
     it("Test get company need to calculate salary from 00:00 to 09:00", async () => {
-      // Reset all data
-      await initSalaryJobTask.companyInfoRepository.delete({});
-      await initSalaryJobTask.companyInfoRepository.save(
-        Object.values(mockCompanies)
-      );
       const hoursInUTC0 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
       for (const hour of hoursInUTC0) {
-        const expectedCompanies = [];
-        expectedCompanies.push(mockCompanies[-hour]);
         await testGetCompanyNeedToCalculateSalary(
-          serverTimezone + hour,
-          expectedCompanies
+          (serverTimezone + hour) * HourInMinutes,
+          [hour === 0 ? hour : -hour * HourInMinutes]
         );
       }
     });
 
     it("Test get company need to calculate salary from 10:00 to 12:00", async () => {
-      // Reset all data
-      await initSalaryJobTask.companyInfoRepository.delete({});
-      await initSalaryJobTask.companyInfoRepository.save(
-        Object.values(mockCompanies)
-      );
       const hoursInUTC0 = [10, 11, 12];
       for (const hour of hoursInUTC0) {
-        const expectedCompanies = [];
-        expectedCompanies.push(mockCompanies[-hour]);
-        expectedCompanies.push(mockCompanies[24 - hour]);
+        const expectedTimezones = [];
+        expectedTimezones.push(-hour * HourInMinutes);
+        expectedTimezones.push((DayInHours - hour) * HourInMinutes);
         await testGetCompanyNeedToCalculateSalary(
-          serverTimezone + hour,
-          expectedCompanies
+          (serverTimezone + hour) * HourInMinutes,
+          expectedTimezones
         );
       }
     });
 
     it("Test get company need to calculate salary from 13:00 to 23:00", async () => {
-      // Reset all data
-      await initSalaryJobTask.companyInfoRepository.delete({});
-      await initSalaryJobTask.companyInfoRepository.save(
-        Object.values(mockCompanies)
-      );
       const hoursInUTC0 = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
       for (const hour of hoursInUTC0) {
-        const expectedCompanies = [];
-        expectedCompanies.push(mockCompanies[24 - hour]);
         await testGetCompanyNeedToCalculateSalary(
-          serverTimezone + hour < 24
-            ? serverTimezone + hour
-            : serverTimezone + hour - 24,
-          expectedCompanies
+          serverTimezone + hour < DayInHours
+            ? (serverTimezone + hour) * HourInMinutes
+            : (serverTimezone + hour - DayInHours) * HourInMinutes,
+          [(DayInHours - hour) * HourInMinutes]
         );
+      }
+    });
+
+    async function randomHourAndMinuteTest(): Promise<void> {
+      const mockRandomHour = randomHour() - 1;
+      const mockRandomMinute = randomMinute();
+      const mockTotalMinute = mockRandomHour * HourInMinutes + mockRandomMinute;
+
+      const companyWithDecimal = mockRandomCompanyInfo(
+        undefined,
+        mockTotalMinute
+      );
+      await initSalaryJobTask.companyInfoRepository.save(companyWithDecimal);
+      const expectedTimeZones = [];
+
+      if (mockTotalMinute >= 0 && mockTotalMinute <= 9 * HourInMinutes) {
+        expectedTimeZones.push(
+          mockTotalMinute === 0 ? mockTotalMinute : -mockTotalMinute
+        );
+        await testGetCompanyNeedToCalculateSalary(
+          serverTimezone * HourInMinutes + mockTotalMinute,
+          expectedTimeZones
+        );
+      }
+
+      if (
+        mockTotalMinute >= 10 * HourInMinutes &&
+        mockTotalMinute <= 12 * HourInMinutes
+      ) {
+        expectedTimeZones.push(-mockRandomMinute);
+        expectedTimeZones.push(DayInMinutes - mockTotalMinute);
+        await testGetCompanyNeedToCalculateSalary(
+          serverTimezone * HourInMinutes + mockTotalMinute,
+          expectedTimeZones
+        );
+      }
+
+      if (
+        mockTotalMinute >= 13 * HourInMinutes &&
+        mockTotalMinute <= 23 * HourInMinutes
+      ) {
+        expectedTimeZones.push(DayInMinutes - mockTotalMinute);
+        await testGetCompanyNeedToCalculateSalary(
+          serverTimezone * HourInMinutes + mockTotalMinute < DayInMinutes
+            ? serverTimezone * HourInMinutes + mockTotalMinute
+            : serverTimezone * HourInMinutes + mockTotalMinute - DayInMinutes,
+          expectedTimeZones
+        );
+      }
+    }
+
+    it("Test get company has timezone with decimal with random Hour and Minute", async () => {
+      let randomCasePass = 0;
+
+      while (randomCasePass < 10) {
+        await randomHourAndMinuteTest();
+        randomCasePass++;
       }
     });
   });

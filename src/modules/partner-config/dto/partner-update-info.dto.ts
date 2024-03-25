@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { Type } from "class-transformer";
 
 export class PartnerUpdateInfoDto {
@@ -22,12 +22,13 @@ export class PartnerUpdateInfoDto {
   companyDescription: string;
 
   @Type(() => Number)
+  @IsInt({ message: "Value must be an integer" })
   @IsNotEmpty()
   @ApiProperty({
     description:
-      "Company timezone -> Job calculate worker salary start from new day at 00:00:00 - 00:00:30 (server_timestamp + company timezone setup)",
+      "Noted: Timezone save on backend must be in minutes.Company timezone -> Job calculate worker salary start from new day at 00:00:00 - 00:00:30 (server_timestamp + company timezone setup)",
     required: true,
-    example: 7,
+    example: 420,
   })
   timezone: number;
 }

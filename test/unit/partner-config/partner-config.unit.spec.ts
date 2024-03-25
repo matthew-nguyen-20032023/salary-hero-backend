@@ -31,7 +31,7 @@ describe("Partner Config Service", () => {
   });
 
   describe("Test Update Company Info", () => {
-    const mockTimezone = 7;
+    const mockTimezone = 1500;
     it("Create new company info because company info not existed", async () => {
       const mockCompanyName = "testCompanyName";
       const mockCompanyDescription = "testDescription";
