@@ -1,0 +1,22 @@
+FROM node:16.20.1-slim
+
+# Working directory
+WORKDIR /app
+
+# Install dependencies
+COPY ./package.json ./
+
+RUN yarn -v
+RUN yarn
+
+# Copy source
+COPY . .
+COPY ./.env.production ./.env
+
+## Build and cleanup
+ENV NODE_ENV=production
+ENV DISABLE_SCHEDULE_JOB=true
+RUN yarn build
+
+## Start server
+CMD ["yarn", "start:prod"]
