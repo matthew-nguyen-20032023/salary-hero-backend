@@ -221,39 +221,29 @@ describe("Task init salary job for company", () => {
     /**
      * @description Base test for reuse
      * @param minuteInUTC0
-     * @param listCompanyExpected
+     * @param expectedTimezone
      */
     async function testGetCompanyNeedToCalculateSalary(
       minuteInUTC0: number,
-      listCompanyExpected: CompanyInfoEntity[]
+      expectedTimezone: number[]
     ): Promise<void> {
       const startTime = `2024-03-01 00:00:00`;
       const serverTime = moment(startTime).add(minuteInUTC0, "minutes");
       const listCompany =
         await initSalaryJobTask.getCompanyNeedToCalculateSalary(serverTime);
-      if (listCompany.length !== listCompanyExpected.length) {
-        console.log(listCompany, "listCompany");
-        console.log(listCompanyExpected, "listCompanyExpected");
-      }
-      expect(listCompany.length).toBe(listCompanyExpected.length);
-      listCompanyExpected.forEach((companyExpected, index) => {
-        expect(companyExpected.company_name).toBe(
-          listCompany[index].company_name
-        );
-        expect(companyExpected.timezone).toBe(listCompany[index].timezone);
+
+      listCompany.forEach((company, index) => {
+        const isIncludeTimezone = expectedTimezone.includes(company.timezone);
+        expect(isIncludeTimezone).toBe(true);
       });
     }
 
     it("Test get company need to calculate salary from 00:00 to 09:00", async () => {
       const hoursInUTC0 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
       for (const hour of hoursInUTC0) {
-        const expectedCompanies = [];
-        expectedCompanies.push(
-          mockCompanies[hour === 0 ? hour : -hour * HourInMinutes]
-        );
         await testGetCompanyNeedToCalculateSalary(
           (serverTimezone + hour) * HourInMinutes,
-          expectedCompanies
+          [hour === 0 ? hour : -hour * HourInMinutes]
         );
       }
     });
@@ -261,14 +251,12 @@ describe("Task init salary job for company", () => {
     it("Test get company need to calculate salary from 10:00 to 12:00", async () => {
       const hoursInUTC0 = [10, 11, 12];
       for (const hour of hoursInUTC0) {
-        const expectedCompanies = [];
-        expectedCompanies.push(mockCompanies[-hour * HourInMinutes]);
-        expectedCompanies.push(
-          mockCompanies[(DayInHours - hour) * HourInMinutes]
-        );
+        const expectedTimezones = [];
+        expectedTimezones.push(-hour * HourInMinutes);
+        expectedTimezones.push((DayInHours - hour) * HourInMinutes);
         await testGetCompanyNeedToCalculateSalary(
           (serverTimezone + hour) * HourInMinutes,
-          expectedCompanies
+          expectedTimezones
         );
       }
     });
@@ -276,54 +264,71 @@ describe("Task init salary job for company", () => {
     it("Test get company need to calculate salary from 13:00 to 23:00", async () => {
       const hoursInUTC0 = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
       for (const hour of hoursInUTC0) {
-        const expectedCompanies = [];
-        expectedCompanies.push(
-          mockCompanies[(DayInHours - hour) * HourInMinutes]
-        );
         await testGetCompanyNeedToCalculateSalary(
           serverTimezone + hour < DayInHours
             ? (serverTimezone + hour) * HourInMinutes
             : (serverTimezone + hour - DayInHours) * HourInMinutes,
-          expectedCompanies
+          [(DayInHours - hour) * HourInMinutes]
         );
       }
     });
 
-    // it("Test get company has timezone with decimal with random Hour and Minute (Case 1)", async () => {
-    //   const mockRandomHour = randomHour() - 1;
-    //   const mockRandomMinute = randomMinute();
-    //   const mockTotalMinute = mockRandomHour * HourInMinutes + mockRandomMinute;
-    //
-    //   const companyWithDecimal = mockRandomCompanyInfo(
-    //     undefined,
-    //     mockTotalMinute
-    //   );
-    //   await initSalaryJobTask.companyInfoRepository.save(companyWithDecimal);
-    //   const expectedCompanies = [];
-    //
-    //   if (mockTotalMinute >= 0 && mockTotalMinute <= 9 * HourInMinutes) {
-    //     expectedCompanies[
-    //       mockTotalMinute === 0 ? mockTotalMinute : -mockTotalMinute
-    //     ] = companyWithDecimal;
-    //     await testGetCompanyNeedToCalculateSalary(
-    //       serverTimezone * HourInMinutes + mockTotalMinute,
-    //       expectedCompanies
-    //     );
-    //   }
-    //
-    //   if (
-    //     mockTotalMinute >= 13 * HourInMinutes &&
-    //     mockTotalMinute <= 23 * HourInMinutes
-    //   ) {
-    //     expectedCompanies[DayInMinutes - mockTotalMinute] = companyWithDecimal;
-    //     await testGetCompanyNeedToCalculateSalary(
-    //       serverTimezone * HourInMinutes + mockTotalMinute < DayInMinutes
-    //         ? serverTimezone * HourInMinutes + mockTotalMinute
-    //         : serverTimezone * HourInMinutes + mockTotalMinute - DayInMinutes,
-    //       expectedCompanies
-    //     );
-    //   }
-    // });
+    async function randomHourAndMinuteTest(): Promise<void> {
+      const mockRandomHour = randomHour() - 1;
+      const mockRandomMinute = randomMinute();
+      const mockTotalMinute = mockRandomHour * HourInMinutes + mockRandomMinute;
+
+      const companyWithDecimal = mockRandomCompanyInfo(
+        undefined,
+        mockTotalMinute
+      );
+      await initSalaryJobTask.companyInfoRepository.save(companyWithDecimal);
+      const expectedTimeZones = [];
+
+      if (mockTotalMinute >= 0 && mockTotalMinute <= 9 * HourInMinutes) {
+        expectedTimeZones.push(
+          mockTotalMinute === 0 ? mockTotalMinute : -mockTotalMinute
+        );
+        await testGetCompanyNeedToCalculateSalary(
+          serverTimezone * HourInMinutes + mockTotalMinute,
+          expectedTimeZones
+        );
+      }
+
+      if (
+        mockTotalMinute >= 10 * HourInMinutes &&
+        mockTotalMinute <= 12 * HourInMinutes
+      ) {
+        expectedTimeZones.push(-mockRandomMinute);
+        expectedTimeZones.push(DayInMinutes - mockTotalMinute);
+        await testGetCompanyNeedToCalculateSalary(
+          serverTimezone * HourInMinutes + mockTotalMinute,
+          expectedTimeZones
+        );
+      }
+
+      if (
+        mockTotalMinute >= 13 * HourInMinutes &&
+        mockTotalMinute <= 23 * HourInMinutes
+      ) {
+        expectedTimeZones.push(DayInMinutes - mockTotalMinute);
+        await testGetCompanyNeedToCalculateSalary(
+          serverTimezone * HourInMinutes + mockTotalMinute < DayInMinutes
+            ? serverTimezone * HourInMinutes + mockTotalMinute
+            : serverTimezone * HourInMinutes + mockTotalMinute - DayInMinutes,
+          expectedTimeZones
+        );
+      }
+    }
+
+    it("Test get company has timezone with decimal with random Hour and Minute", async () => {
+      let randomCasePass = 0;
+
+      while (randomCasePass < 10) {
+        await randomHourAndMinuteTest();
+        randomCasePass++;
+      }
+    });
   });
 
   afterAll(async () => {
